@@ -9,8 +9,6 @@ public interface TrainServiceInterface {
 	
 	public Discount getEarlyBirdDiscount(Train train, int number);
 	
-	public void updateEarlyBirdDiscount(Train train, Discount discount);
-	
 	public int getStdSeatNumber(Train train);
 	
 	public int getBusSeatNumber(Train train);

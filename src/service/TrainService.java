@@ -1,7 +1,6 @@
 package service;
 
 import data.Cart;
-import data.Station;
 import data.Ticket;
 import data.Train;
 import discount.*;
@@ -24,16 +23,6 @@ public class TrainService implements TrainServiceInterface{
 		else if(train.getEarlyBird90() > number) return new EarlyBird90();
 		else return new Standard();
 	}
-	
-	public void updateEarlyBirdDiscount(Train train, Discount discount) {
-		if(discount instanceof EarlyBird65) 
-			train.setEarlyBird65(train.getEarlyBird65()-1);
-		if(discount instanceof EarlyBird80) 
-			train.setEarlyBird80(train.getEarlyBird80()-1);
-		if(discount instanceof EarlyBird90) 
-			train.setEarlyBird90(train.getEarlyBird90()-1);
-	}
-	
 	
 	public int getStdSeatNumber(Train train) {
 		int seatNumber = 0;
@@ -66,16 +55,16 @@ public class TrainService implements TrainServiceInterface{
 
 
 	public String bookSeat(Train train, int cartType, int seatPrefer) {
-		
+		String seatNum = "";
 		if(cartType == Ticket.CartBusiness) {
 			for(Cart cart : train.getCartList()) {
 				if(cart.getCartNumber() != Train.BusCartNum) continue;
 				if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
-					return cart.bookSeat(seatPrefer);
+					seatNum =  cart.bookSeat(seatPrefer);
 				else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
-					return cart.bookSeat(seatPrefer);
+					seatNum =  cart.bookSeat(seatPrefer);
 				else 
-					return cart.bookSeat();
+					seatNum =  cart.bookSeat();
 			}
 		}
 		
@@ -84,14 +73,14 @@ public class TrainService implements TrainServiceInterface{
 				if(cart.getCartNumber() == Train.BusCartNum) 
 					continue;
 				if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
-					return cart.bookSeat(seatPrefer);
+					seatNum =  cart.bookSeat(seatPrefer);
 				else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
-					return cart.bookSeat(seatPrefer);
+					seatNum =  cart.bookSeat(seatPrefer);
 				else 
-					return cart.bookSeat();
+					seatNum =  cart.bookSeat();
 			}
 		}
-		return "";
+		return seatNum;
 	}
 
 	public static void main(String[] args) {

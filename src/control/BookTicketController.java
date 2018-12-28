@@ -5,11 +5,10 @@ import data.Ticket;
 import data.Train;
 import dbconnector.QueryInterface;
 import discount.Discount;
+import discount.EarlyBird65;
 import discount.EarlyBird80;
-import discount.Student85;
-import service.OrderService;
+import discount.EarlyBird90;
 import service.OrderServiceInterface;
-import service.TrainService;
 import service.TrainServiceInterface;
 
 public class BookTicketController {
@@ -18,7 +17,8 @@ public class BookTicketController {
 	public TrainServiceInterface trainService;
 	public OrderServiceInterface orderService;
 	
-	public BookTicketController(TrainServiceInterface trainService, OrderServiceInterface orderService) {
+	public BookTicketController(QueryInterface query, TrainServiceInterface trainService, OrderServiceInterface orderService) {
+		this.query = query;
 		this.trainService = trainService;
 		this.orderService = orderService;
 	}
@@ -30,20 +30,31 @@ public class BookTicketController {
 	
 	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
 		
-		trainService.initCartList(train);
-		Order order = new Order(uid);
+		initTrainCart(train);
 		
+		Order order = new Order(uid);
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
 			Ticket ticket = new Ticket(train, start, end, cartType, seatNumber, discount);
-			trainService.updateEarlyBirdDiscount(train, discount);
+			query.addTicket(order.getOrderNumber(), uid, ticket);
 			orderService.addTicket(order, ticket);
 		}
+		if(discount instanceof EarlyBird65 || discount instanceof EarlyBird80 || discount instanceof EarlyBird90 ) 
+			query.updateEarlyBird(train, discount.getDiscount(), num);
+		query.updateSeatLeft(train, cartType, num);
 		
 		return order;
 	}
 	
+	private void initTrainCart(Train train) {
+		trainService.initCartList(train);
+		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
+		for(String seatNum : unavailableSeatList)
+			trainService.setUnavailableSeat(train, seatNum);
+	}
 	
+	
+	/*
 	public static void main(String[] args) {
 
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
@@ -77,4 +88,5 @@ public class BookTicketController {
 		TrainService ts = new TrainService();
 		System.out.println(ts.getStdSeatNumber(trainA));
 	}
+	*/
 }
