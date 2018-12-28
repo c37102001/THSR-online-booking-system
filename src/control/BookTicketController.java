@@ -4,7 +4,7 @@ import data.Order;
 import data.Ticket;
 import data.Train;
 import discount.Discount;
-import discount.Standard;
+import discount.EarlyBird80;
 import discount.Student85;
 import service.OrderService;
 import service.OrderServiceInterface;
@@ -38,19 +38,17 @@ public class BookTicketController {
 	
 	
 	public static void main(String[] args) {
-		
-		Train trainA = new Train("1072", "2018/12/25", 5, 10, 15, new Student85());
+
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
-    	TrainService ts = new TrainService();
-		ts.setTimeTable(trainA, trainATimetable);
-    	
+		Train trainA = new Train("1072", "2018/12/25", 5, 10, 15, new Student85(), trainATimetable);
+		
     	
 		String uid = "c37102001";
 		String startStation = "еxе_";
 		String endStation = "оч╢щ";
 		int cartType = Ticket.CartStandard;
 		int seatPrefer = Ticket.SeatAisle;
-		Discount discount = new Standard();
+		Discount discount = new EarlyBird80();
 		int ticketQty = 3;
 		
 		
@@ -61,12 +59,15 @@ public class BookTicketController {
 			System.out.println("Number: " + ticket.getTicketNumber());
 			System.out.println("Train ID: " + ticket.getTid());
 			System.out.println("Date: " + ticket.getDate());
-			System.out.println("Start Station: " + ticket.getStart() + " at " + ticket.getStime());
-			System.out.println("End Station: " + ticket.getEnd() + " at " + ticket.getEtime());
+			System.out.println("Start from " + ticket.getStart() + " at " + ticket.getStime());
+			System.out.println("Stop at " + ticket.getEnd() + " at " + ticket.getEtime());
 			System.out.println("Seat: " + ticket.getSeatNum());
 			System.out.println("Discount Type: " + ticket.getDiscountType().getName());
 			System.out.println("Price: " + ticket.getPrice());
 			System.out.println();
 		}
+		
+		TrainService ts = new TrainService();
+		System.out.println(ts.getStdSeatNumber(trainA));
 	}
 }
