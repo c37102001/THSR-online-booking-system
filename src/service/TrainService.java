@@ -67,9 +67,9 @@ public class TrainService implements TrainServiceInterface{
 	}
 
 
-	public String bookSeat(Train train, int seatType, int seatPrefer) {
+	public String bookSeat(Train train, int cartType, int seatPrefer) {
 		
-		if(seatType == Ticket.TicketBusiness) {
+		if(cartType == Ticket.CartBusiness) {
 			for(Cart cart : train.getCartList()) {
 				if(cart.getCartNumber() != Train.BusCartNum) continue;
 				if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
@@ -98,39 +98,39 @@ public class TrainService implements TrainServiceInterface{
 
 	public static void main(String[] args) {
     	Train train = new Train("1072", "2018/12/25", 5, 10, 15, 0.85);
-    	TrainService ts = new TrainService();
+    	TrainService trainService = new TrainService();
     	System.out.println("Train ID: " + train.getTid());
     	System.out.println("Date: " + train.getDate());
     	
-    	ts.initCartList(train);
-    	System.out.println("Std seat number: " + ts.getStdSeatNumber(train));
-    	System.out.println("Bus seat number: " + ts.getBusSeatNumber(train));
+    	trainService.initCartList(train);
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
-    	ts.setUnavailableSeat(train, "0102A");
-    	System.out.println("Std seat number: " + ts.getStdSeatNumber(train));
-    	System.out.println("Bus seat number: " + ts.getBusSeatNumber(train));
+    	trainService.setUnavailableSeat(train, "0102A");
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
-    	ts.setUnavailableSeat(train, "0101C");
-    	System.out.println("Std seat number: " + ts.getStdSeatNumber(train));
-    	System.out.println("Bus seat number: " + ts.getBusSeatNumber(train));
+    	trainService.setUnavailableSeat(train, "0101C");
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
-    	ts.setUnavailableSeat(train, "0101D");
-    	System.out.println("Std seat number: " + ts.getStdSeatNumber(train));
-    	System.out.println("Bus seat number: " + ts.getBusSeatNumber(train));
+    	trainService.setUnavailableSeat(train, "0101D");
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
-    	System.out.println(ts.bookSeat(train, Ticket.TicketStandard, Ticket.SeatWindow));
-    	System.out.println(ts.bookSeat(train, Ticket.TicketStandard, Ticket.SeatAisle));
-    	System.out.println(ts.bookSeat(train, Ticket.TicketBusiness, Ticket.SeatWindow));
-    	System.out.println("Std seat number: " + ts.getStdSeatNumber(train));
-    	System.out.println("Bus seat number: " + ts.getBusSeatNumber(train));
+    	System.out.println(trainService.bookSeat(train, Ticket.CartStandard, Ticket.SeatWindow));
+    	System.out.println(trainService.bookSeat(train, Ticket.CartStandard, Ticket.SeatAisle));
+    	System.out.println(trainService.bookSeat(train, Ticket.CartBusiness, Ticket.SeatWindow));
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
     	for(int i=0; i<10; i++) {
-    		System.out.println(ts.bookSeat(train, Ticket.TicketStandard, Ticket.SeatNoPrefer));
+    		System.out.println(trainService.bookSeat(train, Ticket.CartStandard, Ticket.SeatNoPrefer));
     	}
     	
     	String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
-    	ts.setTimeTable(train, trainATimetable);
-    	System.out.println(ts.getTimeTable(train, "оч╢щ"));
+    	trainService.setTimeTable(train, trainATimetable);
+    	System.out.println(trainService.getTimeTable(train, "оч╢щ"));
     }
 	
 }
