@@ -4,6 +4,7 @@ import data.Cart;
 import data.Station;
 import data.Ticket;
 import data.Train;
+import discount.*;
 
 public class TrainService implements TrainServiceInterface{
 	
@@ -15,11 +16,20 @@ public class TrainService implements TrainServiceInterface{
 	}
 	
 	
-	public double getEarlyBirdDiscount(Train train, int number) {
-		if(train.getEarlyBird65() > number) return 0.65;
-		else if(train.getEarlyBird80() > number) return 0.85;
-		else if(train.getEarlyBird90() > number) return 0.90;
-		else return 1.0;
+	public Discount getEarlyBirdDiscount(Train train, int number) {
+		if(train.getEarlyBird65() > number) return new EarlyBird65();
+		else if(train.getEarlyBird80() > number) return new EarlyBird80();
+		else if(train.getEarlyBird90() > number) return new EarlyBird90();
+		else return new Standard();
+	}
+	
+	public void updateEarlyBirdDiscount(Train train, Discount discount) {
+		if(discount instanceof EarlyBird65) 
+			train.setEarlyBird65(train.getEarlyBird65()-1);
+		if(discount instanceof EarlyBird80) 
+			train.setEarlyBird80(train.getEarlyBird80()-1);
+		if(discount instanceof EarlyBird90) 
+			train.setEarlyBird90(train.getEarlyBird90()-1);
 	}
 	
 	
@@ -97,7 +107,7 @@ public class TrainService implements TrainServiceInterface{
 	}
 
 	public static void main(String[] args) {
-    	Train train = new Train("1072", "2018/12/25", 5, 10, 15, 0.85);
+    	Train train = new Train("1072", "2018/12/25", 5, 10, 15, new Student85());
     	TrainService trainService = new TrainService();
     	System.out.println("Train ID: " + train.getTid());
     	System.out.println("Date: " + train.getDate());

@@ -3,6 +3,8 @@ package data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import discount.Discount;
+
 public class Train{
 	
 
@@ -11,14 +13,14 @@ public class Train{
 	private int earlyBird65;
 	private int earlyBird80;
 	private int earlyBird90;
-	private double universityDiscount;
+	private Discount universityDiscount;
 	private ArrayList<Cart> cartList;
 	private HashMap<String, String> timeTable;
 	public static final int BusCartNum = 6;
 	public static final int TotalCartNum = 9;
 	
 	
-	public Train(String tid, String date, int earlyBird65, int earlyBird80, int earlyBird90, double universityDiscount){
+	public Train(String tid, String date, int earlyBird65, int earlyBird80, int earlyBird90, Discount universityDiscount){
 		this.tid = tid;
 		this.date = date;
 		this.earlyBird65 = earlyBird65;
@@ -41,15 +43,27 @@ public class Train{
 		return earlyBird65;
 	}
 	
+	public void setEarlyBird65(int newEarlyBird65) {
+		this.earlyBird65 = newEarlyBird65;
+	}
+	
 	public int getEarlyBird80() {
 		return earlyBird80;
+	}
+	
+	public void setEarlyBird80(int newEarlyBird80) {
+		this.earlyBird80 = newEarlyBird80;
 	}
 	
 	public int getEarlyBird90() {
 		return earlyBird90;
 	}
+	
+	public void setEarlyBird90(int newEarlyBird90) {
+		this.earlyBird90 = newEarlyBird90;
+	}
 
-	public double getUniversityDiscount() {
+	public Discount getUniversityDiscount() {
 		return universityDiscount;
 	}
 

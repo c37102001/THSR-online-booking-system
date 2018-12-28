@@ -37,7 +37,7 @@ public class Price {
 	};
 	
 	
-	public static int getPrice(String start, String end, int cartType, DiscountInterface discount) {
+	public static int getPrice(String start, String end, int cartType) {
 		int startIdx = Arrays.asList(Station.CHI_NAME).indexOf(start);
 		int endIdx = Arrays.asList(Station.CHI_NAME).indexOf(end);
 		
@@ -45,12 +45,12 @@ public class Price {
 		int station2 = Math.min(startIdx, endIdx);
 		
 		if(cartType == Ticket.CartBusiness) 
-			return (int) (BusPrice[station1][station2] * discount.getDiscount());
-		else return (int) (StdPrice[station1][station2] * discount.getDiscount());
+			return (int) (BusPrice[station1][station2]);
+		else return (int) (StdPrice[station1][station2]);
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getPrice("台中", "桃園", Ticket.CartStandard, new Standard()));
-		System.out.println(getPrice("桃園", "台中", Ticket.CartStandard, new EarlyBird65()));
+		System.out.println(getPrice("台中", "桃園", Ticket.CartStandard));
+		System.out.println(getPrice("桃園", "台中", Ticket.CartStandard));
 	}
 }

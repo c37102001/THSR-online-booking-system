@@ -2,8 +2,7 @@ package data;
 
 import java.util.Random;
 
-import discount.DiscountInterface;
-import service.TrainService;
+import discount.*;
 
 public class Ticket {
 	
@@ -22,11 +21,10 @@ public class Ticket {
 	private String endTime;
 	private String seatNum;
 	private int cartType;
-	private DiscountInterface discount;
+	private Discount discount;
 	private int price;
 	
-	public Ticket(Train train, String startStation, String endStation, int cartType, int seatPrefer, DiscountInterface discount) {
-		TrainService ts = new TrainService();
+	public Ticket(Train train, String startStation, String endStation, int cartType, String seatNum, Discount discount) {
 		this.ticketNumber = Math.abs(new Random().nextInt());
 		this.date = train.getDate();
 		this.tid = train.getTid();
@@ -34,10 +32,12 @@ public class Ticket {
 		this.endStation = endStation;
 		this.startTime = train.getTimeTable().get(startStation);
 		this.endTime = train.getTimeTable().get(endStation);;
-		this.seatNum = ts.bookSeat(train, cartType, seatPrefer);
+		this.seatNum = seatNum;
 		this.discount = discount;
-		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));
+		this.price = (int) (Price.getPrice(startStation, endStation, cartType) * discount.getDiscount());
 	}
+	
+	
 
 	public int getTicketNumber() {
 		return ticketNumber;
@@ -78,7 +78,7 @@ public class Ticket {
 		return price;
 	}
 	
-	public DiscountInterface getDiscountType() {
+	public Discount getDiscountType() {
 		return discount;
 	}
 }

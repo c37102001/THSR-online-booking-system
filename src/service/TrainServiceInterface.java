@@ -1,12 +1,15 @@
 package service;
 
 import data.Train;
+import discount.Discount;
 
 public interface TrainServiceInterface {
 	
 	public void initCartList(Train train);
 	
-	public double getEarlyBirdDiscount(Train train, int number);
+	public Discount getEarlyBirdDiscount(Train train, int number);
+	
+	public void updateEarlyBirdDiscount(Train train, Discount discount);
 	
 	public int getStdSeatNumber(Train train);
 	
@@ -18,6 +21,6 @@ public interface TrainServiceInterface {
 	
 	public String getTimeTable(Train train, String station);
 	
-	public String bookSeat(Train train, int seatType, int seatPrefer);
+	public String bookSeat(Train train, int cartType, int seatPrefer);
 	
 }
