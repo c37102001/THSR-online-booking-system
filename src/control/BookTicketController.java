@@ -3,6 +3,7 @@ package control;
 import data.Order;
 import data.Ticket;
 import data.Train;
+import dbconnector.QueryInterface;
 import discount.Discount;
 import discount.EarlyBird80;
 import discount.Student85;
@@ -13,12 +14,18 @@ import service.TrainServiceInterface;
 
 public class BookTicketController {
 	
+	public QueryInterface query;
 	public TrainServiceInterface trainService;
 	public OrderServiceInterface orderService;
 	
 	public BookTicketController(TrainServiceInterface trainService, OrderServiceInterface orderService) {
 		this.trainService = trainService;
 		this.orderService = orderService;
+	}
+	
+	public void checkOrder(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
+		//TODO return train info and price
+		
 	}
 	
 	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){

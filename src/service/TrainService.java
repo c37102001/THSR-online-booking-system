@@ -95,7 +95,7 @@ public class TrainService implements TrainServiceInterface{
 	}
 
 	public static void main(String[] args) {
-		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
+		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "-1", "0940", "-1", "-1", "1030", "1035", "1050"};
     	Train train = new Train("1072", "2018/12/25", 5, 10, 15, new Student85(), trainATimetable);
     	TrainService trainService = new TrainService();
     	System.out.println("Train ID: " + train.getTid());
