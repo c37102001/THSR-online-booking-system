@@ -1,15 +1,8 @@
 package discount;
 
-public class Discount{
-	protected String name;
-	protected double discount;
-	
+public interface Discount{
 
-	public String getName() {
-		return this.name;
-	}
+	public String getName();
 
-	public double getDiscount() {
-		return this.discount;
-	}
+	public double getDiscount();
 }

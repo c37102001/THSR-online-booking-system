@@ -17,7 +17,7 @@ public class TrainService implements TrainServiceInterface{
 		return train.getTimeTable().get(station);
 	}
 	
-	public Discount getEarlyBirdDiscount(Train train, int number) {
+	public Discount checkEarlyBird(Train train, int number) {
 		if(train.getEarlyBird65() > number) return new EarlyBird65();
 		else if(train.getEarlyBird80() > number) return new EarlyBird80();
 		else if(train.getEarlyBird90() > number) return new EarlyBird90();
@@ -100,6 +100,11 @@ public class TrainService implements TrainServiceInterface{
     	for(int i=0; i<10; i++) {
     		System.out.println(trainService.bookSeat(train, Ticket.CartStandard, Ticket.SeatNoPrefer));
     	}
+    	for(int i=0; i<5; i++) {
+    		System.out.println(trainService.bookSeat(train, Ticket.CartBusiness, Ticket.SeatNoPrefer));
+    	}
+    	System.out.println("Std seat number: " + trainService.getStdSeatNumber(train));
+    	System.out.println("Bus seat number: " + trainService.getBusSeatNumber(train));
     	
     	System.out.println(trainService.getStationTime(train, "оч╢щ"));
     }

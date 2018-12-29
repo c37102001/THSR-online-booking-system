@@ -1,6 +1,6 @@
 package discount;
 
-public class EarlyBird65 extends Discount{
+public class EarlyBird65 extends EarlyBird{
 	
 	public EarlyBird65() {
 		this.name = "¦­³¾65§é";

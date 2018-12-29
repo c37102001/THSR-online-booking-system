@@ -7,7 +7,7 @@ public interface TrainServiceInterface {
 	
 	public void initCartList(Train train);
 	
-	public Discount getEarlyBirdDiscount(Train train, int number);
+	public Discount checkEarlyBird(Train train, int number);
 	
 	public int getStdSeatNumber(Train train);
 	

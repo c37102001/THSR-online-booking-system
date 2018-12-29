@@ -30,7 +30,7 @@ public class BookTicketController {
 	
 	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
 		
-		initTrainCart(train);
+		setupTrainCart(train);
 		
 		Order order = new Order(uid);
 		for(int i=0; i<num; i++) {
@@ -46,7 +46,7 @@ public class BookTicketController {
 		return order;
 	}
 	
-	private void initTrainCart(Train train) {
+	private void setupTrainCart(Train train) {
 		trainService.initCartList(train);
 		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
 		for(String seatNum : unavailableSeatList)
