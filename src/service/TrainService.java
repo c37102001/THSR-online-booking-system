@@ -18,9 +18,9 @@ public class TrainService implements TrainServiceInterface{
 	}
 	
 	public Discount checkEarlyBird(Train train, int number) {
-		if(train.getEarlyBird65() > number) return new EarlyBird65();
-		else if(train.getEarlyBird80() > number) return new EarlyBird80();
-		else if(train.getEarlyBird90() > number) return new EarlyBird90();
+		if(train.getEarlyBird65() >= number) return new EarlyBird65();
+		else if(train.getEarlyBird80() >= number) return new EarlyBird80();
+		else if(train.getEarlyBird90() >= number) return new EarlyBird90();
 		else return new Standard();
 	}
 	

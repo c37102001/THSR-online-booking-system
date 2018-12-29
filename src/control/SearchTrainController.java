@@ -13,6 +13,10 @@ public class SearchTrainController {
 	public QueryInterface query;
 	public TrainServiceInterface trainService;
 	
+	public SearchTrainController(TrainServiceInterface trainService) {
+		this.trainService = trainService;
+	}
+	
 	public SearchTrainController(QueryInterface query, TrainServiceInterface trainService) {
 		this.query = query;
 		this.trainService = trainService;
@@ -32,23 +36,49 @@ public class SearchTrainController {
 			else if(discount instanceof Student) studentT ++;
 		}
 		
+		//TODO sorting by start time
 		
 		for(Train train : trainList) {
-			String discountInfo = "";
+			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
+					startStation, trainService.getStationTime(train, startStation),
+					endStation, trainService.getStationTime(train, endStation));
 			
-			if(trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
-				discountInfo += " " + trainService.checkEarlyBird(train, studentT).getName();
+			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
+				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
 			
-			if(train.getUniversityDiscount() instanceof Student)
-				discountInfo += " " + train.getUniversityDiscount().getName();
-			
+			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
+				trainInfo += ", " + train.getUniversityDiscount().getName();
+			System.out.println(trainInfo);
 		}
-		
-		
 	}
 	
+	public void displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, Discount[] ticketTypes) {
+		int standardT = 0, childrenT = 0, elderlyT = 0, needLoveT = 0, studentT = 0;
+		for(Discount discount : ticketTypes) {
+			if(discount instanceof Standard) standardT ++;
+			else if(discount instanceof Children) childrenT ++;
+			else if(discount instanceof Elderly) elderlyT ++;
+			else if(discount instanceof NeedLove) needLoveT ++;
+			else if(discount instanceof Student) studentT ++;
+		}
+		
+		//TODO sorting by start time
+		
+		for(Train train : trainList) {
+			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
+					startStation, trainService.getStationTime(train, startStation),
+					endStation, trainService.getStationTime(train, endStation));
+			
+			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
+				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
+			
+			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
+				trainInfo += ", " + train.getUniversityDiscount().getName();
+			System.out.println(trainInfo);
+		}
+	}
 
-	/*
+	
 	public static void main(String[] args) {
 		
 		String uid = "c37102001";
@@ -64,15 +94,21 @@ public class SearchTrainController {
 		int elderly = 0;
 		int needlove = 0;
 		int student = 3;
+		Discount[] ticketTypes = {new Standard(), new Standard(), new Children(), new Children(), new Children(), 
+				new Student(), new Student(), new Student()};
 		
 		//-------------------------------------
-		Boolean studentDiscount = true;
 		int ticketQty = 8;
 		
-		
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
-		Train trainA = new Train("1072", "2018/12/25", 5, 10, 15, new Student85(), trainATimetable);
+		Train trainA = new Train("1072", "2018/12/25", 1, 4, 2, new Student85(), trainATimetable);
+		String[] trainBTimetable = {"1400", "1413", "1421", "1454", "1527", "1535", "1550", "1612", "1627", "1643", "1702", "1720"};
+		Train trainB = new Train("928", "2018/12/25", 0, 0, 13, new Standard(), trainBTimetable);
+		
+		Train[] trainList = {trainA, trainB};
+		SearchTrainController searchMan = new SearchTrainController(new TrainService());
+		searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
 	}
-	*/
+	
 
 }

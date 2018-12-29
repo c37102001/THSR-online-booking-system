@@ -1,5 +1,5 @@
 package discount;
 
-public abstract class Student extends DiscountTicket{
+public class Student extends DiscountTicket{
 	
 }

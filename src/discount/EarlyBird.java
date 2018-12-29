@@ -1,5 +1,5 @@
 package discount;
 
-public abstract class EarlyBird extends DiscountTicket{
+public class EarlyBird extends DiscountTicket{
 	
 }
