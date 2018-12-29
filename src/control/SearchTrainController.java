@@ -1,5 +1,8 @@
 package control;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import data.Ticket;
 import data.Train;
 import discount.*;
@@ -36,7 +39,7 @@ public class SearchTrainController {
 			else if(discount instanceof Student) studentT ++;
 		}
 		
-		//TODO sorting by start time
+		sortTrainByTime(trainList, startStation);
 		
 		for(Train train : trainList) {
 			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
@@ -52,6 +55,24 @@ public class SearchTrainController {
 		}
 	}
 	
+	private void sortTrainByTime(Train[] trainList, String startStation) {
+
+		Arrays.sort(trainList, new Comparator<Train>() {
+			@Override
+			public int compare(Train train1, Train train2) {
+				int startTime1 = Integer.parseInt(trainService.getStationTime(train1, startStation));
+				int startTime2 = Integer.parseInt(trainService.getStationTime(train2, startStation));
+				if(startTime1 > startTime2) 
+					return 1;
+				else if(startTime1 < startTime2) 
+					return -1;
+				else
+					return 0;
+			}
+	    });
+	}
+
+	
 	public void displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, Discount[] ticketTypes) {
 		int standardT = 0, childrenT = 0, elderlyT = 0, needLoveT = 0, studentT = 0;
 		for(Discount discount : ticketTypes) {
@@ -62,7 +83,7 @@ public class SearchTrainController {
 			else if(discount instanceof Student) studentT ++;
 		}
 		
-		//TODO sorting by start time
+		sortTrainByTime(trainList, startStation);
 		
 		for(Train train : trainList) {
 			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
@@ -77,7 +98,6 @@ public class SearchTrainController {
 			System.out.println(trainInfo);
 		}
 	}
-
 	
 	public static void main(String[] args) {
 		
@@ -101,14 +121,18 @@ public class SearchTrainController {
 		int ticketQty = 8;
 		
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
-		Train trainA = new Train("1072", "2018/12/25", 1, 4, 2, new Student85(), trainATimetable);
+		Train trainA = new Train("1072", "2018/12/25", 7, 4, 2, new Student85(), trainATimetable);
 		String[] trainBTimetable = {"1400", "1413", "1421", "1454", "1527", "1535", "1550", "1612", "1627", "1643", "1702", "1720"};
 		Train trainB = new Train("928", "2018/12/25", 0, 0, 13, new Standard(), trainBTimetable);
+		String[] trainCTimetable = {"1100", "1113", "1121", "1154", "1227", "1235", "1250", "1312", "1327", "1343", "1402", "1420"};
+		Train trainC = new Train("724", "2018/12/25", 0, 0, 0, new Standard(), trainCTimetable);
+		String[] trainDTimetable = {"1100", "1113", "1121", "1154", "1227", "1235", "1250", "1312", "1327", "1343", "1402", "1420"};
+		Train trainD = new Train("1001", "2018/12/25", 0, 0, 1, new Student50(), trainDTimetable);
 		
-		Train[] trainList = {trainA, trainB};
+		Train[] trainList = {trainA, trainB, trainC, trainD};
+		
 		SearchTrainController searchMan = new SearchTrainController(new TrainService());
 		searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
 	}
-	
 
 }
