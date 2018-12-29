@@ -55,32 +55,17 @@ public class TrainService implements TrainServiceInterface{
 
 
 	public String bookSeat(Train train, int cartType, int seatPrefer) {
-		String seatNum = "";
-		if(cartType == Ticket.CartBusiness) {
-			for(Cart cart : train.getCartList()) {
-				if(cart.getCartNumber() != Train.BusCartNum) continue;
-				if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
-					seatNum =  cart.bookSeat(seatPrefer);
-				else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
-					seatNum =  cart.bookSeat(seatPrefer);
-				else 
-					seatNum =  cart.bookSeat();
-			}
+		for(Cart cart : train.getCartList()) {
+			if(cartType == Ticket.CartBusiness && cart.getCartNumber() != Train.BusCartNum)
+				continue;
+			if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
+				return cart.bookSeat(seatPrefer);
+			else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
+				return cart.bookSeat(seatPrefer);
+			else 
+				return cart.bookSeat();
 		}
-		
-		else {
-			for(Cart cart : train.getCartList()) {
-				if(cart.getCartNumber() == Train.BusCartNum) 
-					continue;
-				if(seatPrefer == Ticket.SeatWindow && cart.getWindowSeatNum()>0) 
-					seatNum =  cart.bookSeat(seatPrefer);
-				else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
-					seatNum =  cart.bookSeat(seatPrefer);
-				else 
-					seatNum =  cart.bookSeat();
-			}
-		}
-		return seatNum;
+		return "";
 	}
 
 	public static void main(String[] args) {
