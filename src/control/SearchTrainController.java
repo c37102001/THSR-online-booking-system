@@ -1,21 +1,32 @@
 package control;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Set;
 
 import data.Ticket;
 import data.Train;
-import discount.*;
-import service.OrderServiceInterface;
+import dbconnector.QueryInterface;
+import discount.Children;
+import discount.Discount;
+import discount.EarlyBird;
+import discount.Elderly;
+import discount.NeedLove;
+import discount.Standard;
+import discount.Student;
+import discount.Student50;
+import discount.Student85;
 import service.TrainService;
 import service.TrainServiceInterface;
-import dbconnector.QueryInterface;
 
 public class SearchTrainController {
 	
 	public QueryInterface query;
 	public TrainServiceInterface trainService;
 	
+	//TODO delete this test constructor
 	public SearchTrainController(TrainServiceInterface trainService) {
 		this.trainService = trainService;
 	}
@@ -25,7 +36,7 @@ public class SearchTrainController {
 		this.trainService = trainService;
 	}
 	
-	public void displayTrainList(String date, String startStation, String endStation, String startTime, int cartType, Discount[] ticketTypes) {
+	public ArrayList<Object> displayTrainList(String date, String startStation, String endStation, String startTime, int cartType, Discount[] ticketTypes) {
 		Train[] trainList;
 		int ticketQty = ticketTypes.length;
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
@@ -40,19 +51,12 @@ public class SearchTrainController {
 		}
 		
 		sortTrainByTime(trainList, startStation);
+		String[] trainInfoList = getTrainInfo(trainList, endStation, endStation, standardT, studentT);
 		
-		for(Train train : trainList) {
-			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
-					startStation, trainService.getStationTime(train, startStation),
-					endStation, trainService.getStationTime(train, endStation));
-			
-			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
-				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
-			
-			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
-				trainInfo += ", " + train.getUniversityDiscount().getName();
-			System.out.println(trainInfo);
-		}
+		ArrayList<Object> resultList = new ArrayList<Object>();
+		resultList.add(trainInfoList);
+		resultList.add(trainList);
+		return resultList;
 	}
 	
 	private void sortTrainByTime(Train[] trainList, String startStation) {
@@ -71,9 +75,30 @@ public class SearchTrainController {
 			}
 	    });
 	}
+	
+	private String[] getTrainInfo(Train[] trainList, String startStation, String endStation, int standardT, int studentT) {
+		
+		String[] trainInfoList = new String[trainList.length];
+		
+		for(int i=0; i<trainList.length; i++) {
+			Train train = trainList[i];
+			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
+					startStation, trainService.getStationTime(train, startStation),
+					endStation, trainService.getStationTime(train, endStation));
+			
+			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
+				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
+			
+			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
+				trainInfo += ", " + train.getUniversityDiscount().getName();
+			
+			trainInfoList[i] = trainInfo;
+		}
+		return trainInfoList;
+	}
 
 	
-	public void displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, Discount[] ticketTypes) {
+	public ArrayList<Object> displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, Discount[] ticketTypes) {
 		int standardT = 0, childrenT = 0, elderlyT = 0, needLoveT = 0, studentT = 0;
 		for(Discount discount : ticketTypes) {
 			if(discount instanceof Standard) standardT ++;
@@ -84,19 +109,12 @@ public class SearchTrainController {
 		}
 		
 		sortTrainByTime(trainList, startStation);
+		String[] trainInfoList = getTrainInfo(trainList, endStation, endStation, standardT, studentT);
 		
-		for(Train train : trainList) {
-			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
-					startStation, trainService.getStationTime(train, startStation),
-					endStation, trainService.getStationTime(train, endStation));
-			
-			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
-				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
-			
-			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
-				trainInfo += ", " + train.getUniversityDiscount().getName();
-			System.out.println(trainInfo);
-		}
+		ArrayList<Object> resultList = new ArrayList<Object>();
+		resultList.add(trainInfoList);
+		resultList.add(trainList);
+		return resultList;
 	}
 	
 	public static void main(String[] args) {
@@ -132,7 +150,13 @@ public class SearchTrainController {
 		Train[] trainList = {trainA, trainB, trainC, trainD};
 		
 		SearchTrainController searchMan = new SearchTrainController(new TrainService());
-		searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
+		ArrayList<Object> result = searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
+		String[] trainInfoList = (String[]) result.get(0);
+		Train[] trainResultList = (Train[]) result.get(1);
+		for(int i=0; i<trainInfoList.length; i++) {
+			String trainInfo = trainInfoList[i];
+			System.out.println(trainInfo);
+			System.out.println(trainResultList[i].getTid());
+		}
 	}
-
 }
