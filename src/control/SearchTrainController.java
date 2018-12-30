@@ -36,22 +36,16 @@ public class SearchTrainController {
 		this.trainService = trainService;
 	}
 	
-	public ArrayList<Object> displayTrainList(String date, String startStation, String endStation, String startTime, int cartType, Discount[] ticketTypes) {
+	public ArrayList<Object> displayTrainList(String date, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
 		Train[] trainList;
 		int ticketQty = ticketTypes.length;
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
 		
-		int standardT = 0, childrenT = 0, elderlyT = 0, needLoveT = 0, studentT = 0;
-		for(Discount discount : ticketTypes) {
-			if(discount instanceof Standard) standardT ++;
-			else if(discount instanceof Children) childrenT ++;
-			else if(discount instanceof Elderly) elderlyT ++;
-			else if(discount instanceof NeedLove) needLoveT ++;
-			else if(discount instanceof Student) studentT ++;
-		}
+		int standardT = ticketTypes[0];
+		int studentT = ticketTypes[4];
 		
 		sortTrainByTime(trainList, startStation);
-		String[] trainInfoList = getTrainInfo(trainList, endStation, endStation, standardT, studentT);
+		String[] trainInfoList = getTrainInfo(trainList, startStation, endStation, standardT, studentT);
 		
 		ArrayList<Object> resultList = new ArrayList<Object>();
 		resultList.add(trainInfoList);
@@ -98,18 +92,13 @@ public class SearchTrainController {
 	}
 
 	
-	public ArrayList<Object> displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, Discount[] ticketTypes) {
-		int standardT = 0, childrenT = 0, elderlyT = 0, needLoveT = 0, studentT = 0;
-		for(Discount discount : ticketTypes) {
-			if(discount instanceof Standard) standardT ++;
-			else if(discount instanceof Children) childrenT ++;
-			else if(discount instanceof Elderly) elderlyT ++;
-			else if(discount instanceof NeedLove) needLoveT ++;
-			else if(discount instanceof Student) studentT ++;
-		}
+	public ArrayList<Object> displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, int[] ticketTypes) {
+		
+		int standardT = ticketTypes[0];
+		int studentT = ticketTypes[4];
 		
 		sortTrainByTime(trainList, startStation);
-		String[] trainInfoList = getTrainInfo(trainList, endStation, endStation, standardT, studentT);
+		String[] trainInfoList = getTrainInfo(trainList, startStation, endStation, standardT, studentT);
 		
 		ArrayList<Object> resultList = new ArrayList<Object>();
 		resultList.add(trainInfoList);
@@ -132,8 +121,7 @@ public class SearchTrainController {
 		int elderly = 0;
 		int needlove = 0;
 		int student = 3;
-		Discount[] ticketTypes = {new Standard(), new Standard(), new Children(), new Children(), new Children(), 
-				new Student(), new Student(), new Student()};
+		int[] ticketTypes = {standard, children, elderly, needlove, student};
 		
 		//-------------------------------------
 		int ticketQty = 8;
@@ -156,7 +144,7 @@ public class SearchTrainController {
 		for(int i=0; i<trainInfoList.length; i++) {
 			String trainInfo = trainInfoList[i];
 			System.out.println(trainInfo);
-			System.out.println(trainResultList[i].getTid());
+			//System.out.println(trainResultList[i].getTid());
 		}
 	}
 }
