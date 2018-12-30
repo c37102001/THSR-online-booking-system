@@ -34,7 +34,7 @@ public class Ticket {
 		this.endTime = train.getTimeTable().get(endStation);;
 		this.seatNum = seatNum;
 		this.discount = discount;
-		this.price = (int) (Price.getPrice(startStation, endStation, cartType) * discount.getDiscount());
+		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));
 	}
 	
 	

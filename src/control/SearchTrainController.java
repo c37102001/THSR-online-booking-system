@@ -1,16 +1,16 @@
 package control;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Set;
 
+import data.Price;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryInterface;
 import discount.Children;
-import discount.Discount;
 import discount.EarlyBird;
 import discount.Elderly;
 import discount.NeedLove;
@@ -41,11 +41,8 @@ public class SearchTrainController {
 		int ticketQty = ticketTypes.length;
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
 		
-		int standardT = ticketTypes[0];
-		int studentT = ticketTypes[4];
-		
 		sortTrainByTime(trainList, startStation);
-		String[] trainInfoList = getTrainInfo(trainList, startStation, endStation, standardT, studentT);
+		String[][] trainInfoList = getTrainInfo(trainList, startStation, endStation, cartType, ticketTypes);
 		
 		ArrayList<Object> resultList = new ArrayList<Object>();
 		resultList.add(trainInfoList);
@@ -70,35 +67,92 @@ public class SearchTrainController {
 	    });
 	}
 	
-	private String[] getTrainInfo(Train[] trainList, String startStation, String endStation, int standardT, int studentT) {
+	private String[][] getTrainInfo(Train[] trainList, String startStation, String endStation, int cartType, int[] ticketTypes) {
 		
-		String[] trainInfoList = new String[trainList.length];
+		int standardT = ticketTypes[0];
+		int childrenT = ticketTypes[1];
+		int elderlyT = ticketTypes[2];
+		int needLoveT = ticketTypes[3];
+		int studentT = ticketTypes[4];
+		
+		String[][] result = new String[7][];
+		
+		String[] idList = new String[trainList.length];
+		String[] startTimeList = new String[trainList.length];
+		String[] endTimeList = new String[trainList.length];
+		String[] totalTimeList = new String[trainList.length];
+		String[] earlyBirdList = new String[trainList.length];
+		String[] studentList = new String[trainList.length];
+		String[] priceList = new String[trainList.length];
 		
 		for(int i=0; i<trainList.length; i++) {
 			Train train = trainList[i];
-			String trainInfo = String.format("車號:%s, 從 %s(%s) 到 %s(%s)", train.getTid(), 
-					startStation, trainService.getStationTime(train, startStation),
-					endStation, trainService.getStationTime(train, endStation));
+			int totalPrice = 0;
+			totalPrice += Price.getPrice(startStation, endStation, cartType, new Children()) * childrenT;
+			totalPrice += Price.getPrice(startStation, endStation, cartType, new Elderly()) * elderlyT;
+			totalPrice += Price.getPrice(startStation, endStation, cartType, new NeedLove()) * needLoveT;
 			
-			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) 
-				trainInfo += ", " + trainService.checkEarlyBird(train, standardT).getName();
+			idList[i] = train.getTid();
 			
-			if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
-				trainInfo += ", " + train.getUniversityDiscount().getName();
+			startTimeList[i] = trainService.getStationTime(train, startStation);
 			
-			trainInfoList[i] = trainInfo;
+			endTimeList[i] = trainService.getStationTime(train, endStation);
+			
+			totalTimeList[i] = totalTimeCulculator(startTimeList[i], endTimeList[i]);
+			
+			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) {
+				earlyBirdList[i] = trainService.checkEarlyBird(train, standardT).getName();
+				totalPrice += Price.getPrice(startStation, endStation, cartType, trainService.checkEarlyBird(train, standardT)) * standardT;
+			}
+			else{
+				earlyBirdList[i] = null;
+				totalPrice += Price.getPrice(startStation, endStation, cartType, new Standard()) * standardT;
+			}
+			
+			if(studentT != 0 && train.getUniversityDiscount() instanceof Student) {
+				studentList[i] = train.getUniversityDiscount().getName();
+				totalPrice += Price.getPrice(startStation, endStation, cartType, train.getUniversityDiscount()) * studentT;
+			}
+			else{
+				studentList[i] = null;
+				totalPrice += Price.getPrice(startStation, endStation, cartType, new Standard()) * studentT;
+			}
+			
+			priceList[i] = "" + totalPrice;
 		}
-		return trainInfoList;
+		
+		result[0] = idList;
+		result[1] = startTimeList;
+		result[2] = endTimeList;
+		result[3] = totalTimeList;
+		result[4] = earlyBirdList;
+		result[5] = studentList;
+		result[6] = priceList;
+		return result;
 	}
-
+	
+	private String totalTimeCulculator(String startTime, String endTime) {
+		startTime = String.format("%04d", Integer.parseInt(startTime));
+		endTime = String.format("%04d", Integer.parseInt(endTime));
+		
+		SimpleDateFormat format = new SimpleDateFormat("HHmm");
+		long difference = 0;
+		try {
+			difference = format.parse(endTime).getTime() - format.parse(startTime).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		int hours = (int) (difference/ (60 * 60 * 1000) % 24);
+		int mins = (int) (difference / (60 * 1000) % 60);
+		String totalTime = String.format("%d:%d", hours, mins);
+		return totalTime;
+	}
 	
 	public ArrayList<Object> displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, int[] ticketTypes) {
 		
-		int standardT = ticketTypes[0];
-		int studentT = ticketTypes[4];
-		
 		sortTrainByTime(trainList, startStation);
-		String[] trainInfoList = getTrainInfo(trainList, startStation, endStation, standardT, studentT);
+		String[][] trainInfoList = getTrainInfo(trainList, startStation, endStation, cartType, ticketTypes);
 		
 		ArrayList<Object> resultList = new ArrayList<Object>();
 		resultList.add(trainInfoList);
@@ -123,9 +177,6 @@ public class SearchTrainController {
 		int student = 3;
 		int[] ticketTypes = {standard, children, elderly, needlove, student};
 		
-		//-------------------------------------
-		int ticketQty = 8;
-		
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
 		Train trainA = new Train("1072", "2018/12/25", 7, 4, 2, new Student85(), trainATimetable);
 		String[] trainBTimetable = {"1400", "1413", "1421", "1454", "1527", "1535", "1550", "1612", "1627", "1643", "1702", "1720"};
@@ -139,12 +190,12 @@ public class SearchTrainController {
 		
 		SearchTrainController searchMan = new SearchTrainController(new TrainService());
 		ArrayList<Object> result = searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
-		String[] trainInfoList = (String[]) result.get(0);
-		Train[] trainResultList = (Train[]) result.get(1);
-		for(int i=0; i<trainInfoList.length; i++) {
-			String trainInfo = trainInfoList[i];
-			System.out.println(trainInfo);
-			//System.out.println(trainResultList[i].getTid());
+		String[][] trainInfoList = (String[][]) result.get(0);
+		for(String[] infos : trainInfoList) {
+			for(String info : infos) {
+				System.out.println(info);
+			}
+			System.out.println();
 		}
 	}
 }
