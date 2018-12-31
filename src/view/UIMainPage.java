@@ -323,9 +323,10 @@ public class UIMainPage extends JFrame {
 				kidNum = (int)kid.getValue();
 				priorNum = (int) prior.getValue();
 				ticketSum = group.getGroupValue();
+				int[] ticketTypes = {adultNum, kidNum, elderNum, priorNum, studentNum};
 				
 				// UIMainPage
-				UIOrderPage orderpage = new UIOrderPage(uid, startStn, endStn, date, time, cartType, seatPrefer, adultNum, elderNum, studentNum, kidNum, priorNum, ticketSum);
+				UIOrderPage orderpage = new UIOrderPage(uid, startStn, endStn, date, time, cartType, seatPrefer, ticketTypes);
 				orderpage.setVisible(true);
 			}
 		});

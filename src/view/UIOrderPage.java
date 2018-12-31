@@ -24,6 +24,14 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import control.BookTicketController;
+import control.SearchTrainController;
+import data.Order;
+import data.Ticket;
+import data.Train;
+import service.OrderService;
+import service.TrainService;
+
 
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
@@ -51,29 +59,7 @@ public class UIOrderPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UIOrderPage(String uid, String startStn, String endStn, String date, String time, int cartType, int seatPrefer, int adultNum, int elderNum, int studentNum, int kidNum, int priorNum, int ticketSum) {
-		
-		System.out.println("uid: " + uid);
-		System.out.println("startStn: " + startStn);
-		System.out.println("endStn: " + endStn);
-		System.out.println("time: " + date + " " + time);
-		if (cartType == 0)
-			System.out.println("cartType: 標準");
-		else
-			System.out.println("cartType: 商務");
-		if (seatPrefer == 0)
-			System.out.println("seatPrefer: 無");
-		else if (seatPrefer == 1)
-			System.out.println("seatPrefer: 靠走道");
-		else
-			System.out.println("seatPrefer: 靠窗");
-		System.out.println("adult: " + adultNum);
-		System.out.println("elder: " + elderNum);
-		System.out.println("student: " + studentNum);
-		System.out.println("kid: " + kidNum);
-		System.out.println("prior: " + priorNum);
-		System.out.println("total: " + ticketSum + " 張");
-		
+	public UIOrderPage(String uid, String startStn, String endStn, String date, String time, int cartType, int seatPrefer, int[] ticketTypes) {
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
@@ -160,30 +146,44 @@ public class UIOrderPage extends JFrame {
 		JButton getTrainBtn = new JButton("New button");
 		getTrainBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String TID = "test";
-				String startTime = "11:20";
-				String arror = "→";
-				String arriveTime = "13:20";
-				String drivingTime = "2:00";
 				
-				Object[] row = {TID, startTime, arror, arriveTime, drivingTime};
-	
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				SearchTrainController searchMan = new SearchTrainController(new TrainService());
+				Train[] trainList = searchMan.getTrainListTest(date, startStn, endStn, time, cartType, ticketTypes);
 				
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
-				model.addRow(row);
+				for(int i=0; i<trainList.length; i++) {
+					Train train = trainList[i];
+					String TID = train.getTid();
+					String startTime = train.getTimetable(startStn);
+					String arror = "→";
+					String arriveTime = train.getTimetable(endStn);
+					String drivingTime = searchMan.totalTimeCulculator(train, startStn, endStn);
+				
+					Object[] row = {TID, startTime, arror, arriveTime, drivingTime};
+					
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					model.addRow(row);
+				}
+				
+				/* when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one,
+				 * and it's supposed to return the order/ticket details.
+				 */
+				BookTicketController bookingHelper = new BookTicketController(new TrainService(), new OrderService());
+				Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
+				
+				for(Ticket ticket : myorder.getTicketList()) {
+					System.out.println("車票代號: " + ticket.getTicketNumber());
+					System.out.println("車次: " + ticket.getTid());
+					System.out.println("日期: " + ticket.getDate());
+					System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
+					System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")");
+					System.out.println("座位號碼: " + ticket.getSeatNum());
+					System.out.println("票種: " + ticket.getDiscountType().getName());
+					System.out.println("價格: " + ticket.getPrice());
+					System.out.println();
+				}
+				System.out.println("訂單總額:" + myorder.getTotalPrice());
+				
+				
 				
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
