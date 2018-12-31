@@ -15,8 +15,6 @@ public interface TrainServiceInterface {
 	
 	public void setUnavailableSeat(Train train, String seatNum);
 	
-	public String getStationTime(Train train, String station);
-	
 	public String bookSeat(Train train, int cartType, int seatPrefer);
 	
 }

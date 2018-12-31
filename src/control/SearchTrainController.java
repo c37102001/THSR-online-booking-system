@@ -2,7 +2,6 @@ package control;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -16,8 +15,6 @@ import discount.Elderly;
 import discount.NeedLove;
 import discount.Standard;
 import discount.Student;
-import discount.Student50;
-import discount.Student85;
 import service.TrainService;
 import service.TrainServiceInterface;
 
@@ -36,7 +33,7 @@ public class SearchTrainController {
 		this.trainService = trainService;
 	}
 	
-	public ArrayList<Object> displayTrainList(String date, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
+	public Train[] getTrainList(String date, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
 		Train[] trainList;
 		int ticketQty=0;
 		for(int ticketNum : ticketTypes)
@@ -44,12 +41,12 @@ public class SearchTrainController {
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
 		
 		sortTrainByTime(trainList, startStation);
-		String[][] trainInfoList = getTrainInfo(trainList, startStation, endStation, cartType, ticketTypes);
 		
-		ArrayList<Object> resultList = new ArrayList<Object>();
-		resultList.add(trainInfoList);
-		resultList.add(trainList);
-		return resultList;
+		return trainList;
+	}
+	public Train[] getTrainListTest(Train[] trainList, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
+		sortTrainByTime(trainList, startStation);
+		return trainList;
 	}
 	
 	private void sortTrainByTime(Train[] trainList, String startStation) {
@@ -57,8 +54,8 @@ public class SearchTrainController {
 		Arrays.sort(trainList, new Comparator<Train>() {
 			@Override
 			public int compare(Train train1, Train train2) {
-				int startTime1 = Integer.parseInt(trainService.getStationTime(train1, startStation));
-				int startTime2 = Integer.parseInt(trainService.getStationTime(train2, startStation));
+				int startTime1 = Integer.parseInt(train1.getTimetable(startStation));
+				int startTime2 = Integer.parseInt(train2.getTimetable(startStation));
 				if(startTime1 > startTime2) 
 					return 1;
 				else if(startTime1 < startTime2) 
@@ -69,71 +66,32 @@ public class SearchTrainController {
 	    });
 	}
 	
-	private String[][] getTrainInfo(Train[] trainList, String startStation, String endStation, int cartType, int[] ticketTypes) {
-		
+	public int getTotalPrice(Train train, String startStation, String endStation, int cartType, int[] ticketTypes) {
+		int totalPrice = 0;
 		int standardT = ticketTypes[0];
 		int childrenT = ticketTypes[1];
 		int elderlyT = ticketTypes[2];
 		int needLoveT = ticketTypes[3];
 		int studentT = ticketTypes[4];
 		
-		String[][] result = new String[7][];
+		totalPrice += Price.getPrice(startStation, endStation, cartType, new Children()) * childrenT;
+		totalPrice += Price.getPrice(startStation, endStation, cartType, new Elderly()) * elderlyT;
+		totalPrice += Price.getPrice(startStation, endStation, cartType, new NeedLove()) * needLoveT;
+		totalPrice += Price.getPrice(startStation, endStation, cartType, train.getUniversityDiscount()) * studentT;
 		
-		String[] idList = new String[trainList.length];
-		String[] startTimeList = new String[trainList.length];
-		String[] endTimeList = new String[trainList.length];
-		String[] totalTimeList = new String[trainList.length];
-		String[] earlyBirdList = new String[trainList.length];
-		String[] studentList = new String[trainList.length];
-		String[] priceList = new String[trainList.length];
+		if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird)
+			totalPrice += Price.getPrice(startStation, endStation, cartType, trainService.checkEarlyBird(train, standardT)) * standardT;
+		else
+			totalPrice += Price.getPrice(startStation, endStation, cartType, new Standard()) * standardT;
 		
-		for(int i=0; i<trainList.length; i++) {
-			Train train = trainList[i];
-			int totalPrice = 0;
-			totalPrice += Price.getPrice(startStation, endStation, cartType, new Children()) * childrenT;
-			totalPrice += Price.getPrice(startStation, endStation, cartType, new Elderly()) * elderlyT;
-			totalPrice += Price.getPrice(startStation, endStation, cartType, new NeedLove()) * needLoveT;
-			
-			idList[i] = train.getTid();
-			
-			startTimeList[i] = trainService.getStationTime(train, startStation);
-			
-			endTimeList[i] = trainService.getStationTime(train, endStation);
-			
-			totalTimeList[i] = totalTimeCulculator(startTimeList[i], endTimeList[i]);
-			
-			if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird) {
-				earlyBirdList[i] = trainService.checkEarlyBird(train, standardT).getName();
-				totalPrice += Price.getPrice(startStation, endStation, cartType, trainService.checkEarlyBird(train, standardT)) * standardT;
-			}
-			else{
-				earlyBirdList[i] = null;
-				totalPrice += Price.getPrice(startStation, endStation, cartType, new Standard()) * standardT;
-			}
-			
-			if(studentT != 0 && train.getUniversityDiscount() instanceof Student) {
-				studentList[i] = train.getUniversityDiscount().getName();
-				totalPrice += Price.getPrice(startStation, endStation, cartType, train.getUniversityDiscount()) * studentT;
-			}
-			else{
-				studentList[i] = null;
-				totalPrice += Price.getPrice(startStation, endStation, cartType, new Standard()) * studentT;
-			}
-			
-			priceList[i] = "" + totalPrice;
-		}
-		
-		result[0] = idList;
-		result[1] = startTimeList;
-		result[2] = endTimeList;
-		result[3] = totalTimeList;
-		result[4] = earlyBirdList;
-		result[5] = studentList;
-		result[6] = priceList;
-		return result;
+		return totalPrice;
 	}
 	
-	private String totalTimeCulculator(String startTime, String endTime) {
+	public String totalTimeCulculator(Train train, String startStation, String endStation) {
+		
+		String startTime = train.getTimetable(startStation);
+		String endTime = train.getTimetable(endStation);
+		
 		startTime = String.format("%04d", Integer.parseInt(startTime));
 		endTime = String.format("%04d", Integer.parseInt(endTime));
 		
@@ -151,32 +109,37 @@ public class SearchTrainController {
 		return totalTime;
 	}
 	
-	public ArrayList<Object> displayTrainListTest(Train[] trainList, String startStation, String endStation, int cartType, int[] ticketTypes) {
-		
-		sortTrainByTime(trainList, startStation);
-		String[][] trainInfoList = getTrainInfo(trainList, startStation, endStation, cartType, ticketTypes);
-		
-		ArrayList<Object> resultList = new ArrayList<Object>();
-		resultList.add(trainInfoList);
-		resultList.add(trainList);
-		return resultList;
+	public String checkEarlyBird(Train train, int standardT) {
+		String earlyBirdDiscount = "";
+		if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird)
+			earlyBirdDiscount = ", " + new TrainService().checkEarlyBird(train, standardT).getName();
+		else
+			earlyBirdDiscount = "";
+		return earlyBirdDiscount;
+	}
+	
+	public String checkStudent(Train train, int studentT) {
+		String studentDiscount = "";
+		if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
+			studentDiscount = ", " + train.getUniversityDiscount().getName();
+		else
+			studentDiscount = "";
+		return studentDiscount;
 	}
 	
 	public static void main(String[] args) {
 		
-		String uid = "c37102001";
 		String startStation = "台北";
 		String endStation = "桃園";
-		String date = "2018/12/25";
+//		String date = "2018/12/25";
 		String startTime = "0600";
 		int cartType = Ticket.CartStandard;
-		int seatPrefer = Ticket.SeatAisle;
 		
 		int standard = 2;
-		int children = 3;
-		int elderly = 0;
-		int needlove = 0;
-		int student = 3;
+		int children = 1;
+		int elderly = 1;
+		int needlove = 1;
+		int student = 2;
 		int[] ticketTypes = {standard, children, elderly, needlove, student};
 		
 		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
@@ -191,13 +154,17 @@ public class SearchTrainController {
 		Train[] trainList = {trainA, trainB, trainC, trainD};
 		
 		SearchTrainController searchMan = new SearchTrainController(new TrainService());
-		ArrayList<Object> result = searchMan.displayTrainListTest(trainList, startStation, endStation, Ticket.CartStandard, ticketTypes);
-		String[][] trainInfoList = (String[][]) result.get(0);
-		for(String[] infos : trainInfoList) {
-			for(String info : infos) {
-				System.out.println(info);
-			}
-			System.out.println();
+		Train[] sortedTrainList = searchMan.getTrainListTest(trainList, startStation, endStation, startTime, cartType, ticketTypes);
+		
+		for(Train train : sortedTrainList) {
+			System.out.println(
+					"車號: " + train.getTid() + 
+					", 從 " + startStation +"("+ train.getTimetable(startStation) + 
+					") 到 " + endStation +"("+ train.getTimetable(endStation) + 
+					"), 總價:" + searchMan.getTotalPrice(train, startStation, endStation, cartType, ticketTypes) + 
+					", 行車時間:" + searchMan.totalTimeCulculator(train, startStation, endStation) + 
+					searchMan.checkEarlyBird(train, standard) +
+					searchMan.checkStudent(train, student));
 		}
 	}
 }

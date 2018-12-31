@@ -30,8 +30,8 @@ public class Ticket {
 		this.tid = train.getTid();
 		this.startStation = startStation;
 		this.endStation = endStation;
-		this.startTime = train.getTimeTable().get(startStation);
-		this.endTime = train.getTimeTable().get(endStation);;
+		this.startTime = train.getTimetable(startStation);
+		this.endTime = train.getTimetable(endStation);
 		this.seatNum = seatNum;
 		this.discount = discount;
 		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));

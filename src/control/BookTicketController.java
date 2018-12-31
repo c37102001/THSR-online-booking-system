@@ -6,10 +6,11 @@ import data.Train;
 import dbconnector.QueryInterface;
 import discount.Children;
 import discount.Discount;
-import discount.EarlyBird;
 import discount.Elderly;
 import discount.NeedLove;
+import service.OrderService;
 import service.OrderServiceInterface;
+import service.TrainService;
 import service.TrainServiceInterface;
 
 public class BookTicketController {
@@ -17,6 +18,12 @@ public class BookTicketController {
 	public QueryInterface query;
 	public TrainServiceInterface trainService;
 	public OrderServiceInterface orderService;
+	
+	
+	public BookTicketController(TrainServiceInterface trainService, OrderServiceInterface orderService) {
+		this.trainService = trainService;
+		this.orderService = orderService;
+	}
 	
 	public BookTicketController(QueryInterface query, TrainServiceInterface trainService, OrderServiceInterface orderService) {
 		this.query = query;
@@ -53,55 +60,56 @@ public class BookTicketController {
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
 			Ticket ticket = new Ticket(train, start, end, cartType, seatNumber, discount);
-			query.addTicket(order.getOrderNumber(), uid, ticket);
+//			query.addTicket(order.getOrderNumber(), uid, ticket);
 			orderService.addTicket(order, ticket);
 		}
-		if(discount instanceof EarlyBird) 
-			query.updateEarlyBird(train, discount.getDiscount(), num);
-		query.updateSeatLeft(train, cartType, num);
+//		if(discount instanceof EarlyBird) 
+//			query.updateEarlyBird(train, discount.getDiscount(), num);
+//		query.updateSeatLeft(train, cartType, num);
 	}
 	
 	private void setupTrainCart(Train train) {
 		trainService.initCartList(train);
-		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
-		for(String seatNum : unavailableSeatList)
-			trainService.setUnavailableSeat(train, seatNum);
+//		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
+//		for(String seatNum : unavailableSeatList)
+//			trainService.setUnavailableSeat(train, seatNum);
 	}
 	
 	
-	/*
+	
 	public static void main(String[] args) {
 
-		String[] trainATimetable = {"0800", "0810", "0815", "0835", "0855", "0910", "0940", "1005", "1020", "1030", "1035", "1050"};
-		Train trainA = new Train("1072", "2018/12/25", 5, 10, 15, new Student85(), trainATimetable);
-		
+		String[] trainATimetable = {"1400", "1413", "1421", "1454", "1527", "1535", "1550", "1612", "1627", "1643", "1702", "1720"};
+		Train trainA = new Train("928", "2018/12/25", 0, 0, 13, 1, trainATimetable);
     	
 		String uid = "c37102001";
 		String startStation = "台北";
 		String endStation = "桃園";
 		int cartType = Ticket.CartStandard;
 		int seatPrefer = Ticket.SeatAisle;
-		Discount discount = new EarlyBird80();
-		int ticketQty = 3;
+		int[] ticketTypes = {2, 1, 1, 1, 2};
 		
 		
 		BookTicketController bookingHelper = new BookTicketController(new TrainService(), new OrderService());
-		Order myorder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, discount, ticketQty);
+		Order myorder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, ticketTypes);
 		
 		for(Ticket ticket : myorder.getTicketList()) {
-			System.out.println("Number: " + ticket.getTicketNumber());
-			System.out.println("Train ID: " + ticket.getTid());
-			System.out.println("Date: " + ticket.getDate());
-			System.out.println("Start from " + ticket.getStart() + " at " + ticket.getStime());
-			System.out.println("Stop at " + ticket.getEnd() + " at " + ticket.getEtime());
-			System.out.println("Seat: " + ticket.getSeatNum());
-			System.out.println("Discount Type: " + ticket.getDiscountType().getName());
-			System.out.println("Price: " + ticket.getPrice());
+			System.out.println("車票代號: " + ticket.getTicketNumber());
+			System.out.println("車次: " + ticket.getTid());
+			System.out.println("日期: " + ticket.getDate());
+			System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
+			System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")");
+			System.out.println("座位號碼: " + ticket.getSeatNum());
+			System.out.println("票種: " + ticket.getDiscountType().getName());
+			System.out.println("價格: " + ticket.getPrice());
 			System.out.println();
 		}
+		System.out.println("訂單總額:" + myorder.getTotalPrice());
 		
 		TrainService ts = new TrainService();
-		System.out.println(ts.getStdSeatNumber(trainA));
+		System.out.println("剩下標準車廂座位: " + ts.getStdSeatNumber(trainA));
 	}
-	*/
+	
+	
+	
 }

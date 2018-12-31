@@ -19,7 +19,7 @@ public class Train{
 	private int earlyBird90;
 	private Discount universityDiscount;
 	private ArrayList<Cart> cartList;
-	private HashMap<String, String> timeTable;
+	private HashMap<String, String> timetable;
 
 	public static final int BusCartNum = 6;
 	public static final int TotalCartNum = 9;
@@ -42,9 +42,9 @@ public class Train{
 			this.universityDiscount = new Standard();
 		
 		cartList = new ArrayList<Cart>();
-		timeTable = new HashMap<String, String>();
+		timetable = new HashMap<String, String>();
 		for(int i=0; i<Station.CHI_NAME.length; i++) {
-			timeTable.put(Station.CHI_NAME[i], time[i]);
+			timetable.put(Station.CHI_NAME[i], time[i]);
 		}
 	} 
 
@@ -88,7 +88,7 @@ public class Train{
 		this.earlyBird80 = newEarlyBird80;
 	}
 	
-	public HashMap<String, String> getTimeTable() {
-		return timeTable;
+	public String getTimetable(String station) {
+		return timetable.get(station);
 	}
 }
