@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import discount.Discount;
+import discount.Standard;
+import discount.Student50;
+import discount.Student70;
+import discount.Student85;
 
 public class Train{
 	
@@ -21,13 +25,22 @@ public class Train{
 	public static final int TotalCartNum = 9;
 	
 	
-	public Train(String tid, String date, int earlyBird65, int earlyBird80, int earlyBird90, Discount universityDiscount, String[] time){
+	public Train(String tid, String date, int earlyBird65, int earlyBird80, int earlyBird90, double universityDiscount, String[] time){
 		this.tid = tid;
 		this.date = date;
 		this.earlyBird65 = earlyBird65;
 		this.earlyBird80 = earlyBird80;
 		this.earlyBird90 = earlyBird90;
-		this.universityDiscount = universityDiscount;
+		
+		if(universityDiscount == 0.5)
+			this.universityDiscount = new Student50();
+		else if(universityDiscount == 0.7)
+			this.universityDiscount = new Student70();
+		else if(universityDiscount == 0.85)
+			this.universityDiscount = new Student85();
+		else
+			this.universityDiscount = new Standard();
+		
 		cartList = new ArrayList<Cart>();
 		timeTable = new HashMap<String, String>();
 		for(int i=0; i<Station.CHI_NAME.length; i++) {

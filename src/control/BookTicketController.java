@@ -4,10 +4,11 @@ import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryInterface;
+import discount.Children;
 import discount.Discount;
-import discount.EarlyBird65;
-import discount.EarlyBird80;
-import discount.EarlyBird90;
+import discount.EarlyBird;
+import discount.Elderly;
+import discount.NeedLove;
 import service.OrderServiceInterface;
 import service.TrainServiceInterface;
 
@@ -23,27 +24,41 @@ public class BookTicketController {
 		this.orderService = orderService;
 	}
 	
-	public void checkOrder(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
-		//TODO return train info and price
+	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, int[] ticketTypes) {
+		setupTrainCart(train);
+		Order order = new Order(uid);
 		
+		int standardT = ticketTypes[0];
+		int childrenT = ticketTypes[1];
+		int elderlyT = ticketTypes[2];
+		int needLoveT = ticketTypes[3];
+		int studentT = ticketTypes[4];
+		
+		if(standardT != 0)
+			makeSingleBooking(train, order, uid, start, end, cartType, seatPrefer, trainService.checkEarlyBird(train, standardT), standardT);
+		if(childrenT != 0)
+			makeSingleBooking(train, order, uid, start, end, cartType, seatPrefer, new Children(), childrenT);
+		if(elderlyT != 0)
+			makeSingleBooking(train, order, uid, start, end, cartType, seatPrefer, new Elderly(), elderlyT);
+		if(needLoveT != 0)
+			makeSingleBooking(train, order, uid, start, end, cartType, seatPrefer, new NeedLove(), needLoveT);
+		if(studentT != 0)
+			makeSingleBooking(train, order, uid, start, end, cartType, seatPrefer, train.getUniversityDiscount(), studentT);
+		
+		return order;
 	}
 	
-	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
+	private void makeSingleBooking(Train train, Order order, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
 		
-		setupTrainCart(train);
-		
-		Order order = new Order(uid);
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
 			Ticket ticket = new Ticket(train, start, end, cartType, seatNumber, discount);
 			query.addTicket(order.getOrderNumber(), uid, ticket);
 			orderService.addTicket(order, ticket);
 		}
-		if(discount instanceof EarlyBird65 || discount instanceof EarlyBird80 || discount instanceof EarlyBird90 ) 
+		if(discount instanceof EarlyBird) 
 			query.updateEarlyBird(train, discount.getDiscount(), num);
 		query.updateSeatLeft(train, cartType, num);
-		
-		return order;
 	}
 	
 	private void setupTrainCart(Train train) {
