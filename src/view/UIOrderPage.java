@@ -1,26 +1,19 @@
 package view;
 
-import java.awt.EventQueue;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.Color;
-
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import javax.swing.SwingConstants;
-
-
-import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,7 +22,7 @@ import control.SearchTrainController;
 import data.Order;
 import data.Ticket;
 import data.Train;
-import service.OrderService;
+import dbconnector.QueryTest;
 import service.TrainService;
 
 
@@ -147,8 +140,8 @@ public class UIOrderPage extends JFrame {
 		getTrainBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				SearchTrainController searchMan = new SearchTrainController(new TrainService());
-				Train[] trainList = searchMan.getTrainListTest(date, startStn, endStn, time, cartType, ticketTypes);
+				SearchTrainController searchMan = new SearchTrainController(new QueryTest(), new TrainService());
+				Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 				
 				for(int i=0; i<trainList.length; i++) {
 					Train train = trainList[i];
@@ -167,7 +160,7 @@ public class UIOrderPage extends JFrame {
 				/* when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one,
 				 * and it's supposed to return the order/ticket details.
 				 */
-				BookTicketController bookingHelper = new BookTicketController(new TrainService(), new OrderService());
+				BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService());
 				Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
 				
 				for(Ticket ticket : myorder.getTicketList()) {

@@ -12,7 +12,7 @@ public class Ticket {
 	public static final int SeatAisle = 2;
 	public static final int SeatNoPrefer = 3;
 	
-	private int ticketNumber;
+	private String ticketNumber;
 	private String date;
 	private String tid;
 	private String startStation;
@@ -24,8 +24,11 @@ public class Ticket {
 	private Discount discount;
 	private int price;
 	
-	public Ticket(Train train, String startStation, String endStation, int cartType, String seatNum, Discount discount) {
-		this.ticketNumber = Math.abs(new Random().nextInt());
+	public Ticket(String ticketNumber, Train train, String startStation, String endStation, int cartType, String seatNum, Discount discount) {
+		if (ticketNumber == null)
+			this.ticketNumber = Integer.toString(Math.abs(new Random().nextInt()));
+		else 
+			this.ticketNumber = ticketNumber;
 		this.date = train.getDate();
 		this.tid = train.getTid();
 		this.startStation = startStation;
@@ -37,9 +40,22 @@ public class Ticket {
 		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));
 	}
 	
+//	public Ticket(Train train, String startStation, String endStation, int cartType, String seatNum, Discount discount, String ticketNum) {
+//		this.ticketNumber = ticketNum;
+//		this.date = train.getDate();
+//		this.tid = train.getTid();
+//		this.startStation = startStation;
+//		this.endStation = endStation;
+//		this.startTime = train.getTimetable(startStation);
+//		this.endTime = train.getTimetable(endStation);
+//		this.seatNum = seatNum;
+//		this.discount = discount;
+//		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));
+//	}
+	
 	
 
-	public int getTicketNumber() {
+	public String getTicketNumber() {
 		return ticketNumber;
 	}
 

@@ -4,12 +4,12 @@ import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryInterface;
+import dbconnector.QueryTest;
 import discount.Children;
 import discount.Discount;
+import discount.EarlyBird;
 import discount.Elderly;
 import discount.NeedLove;
-import service.OrderService;
-import service.OrderServiceInterface;
 import service.TrainService;
 import service.TrainServiceInterface;
 
@@ -17,18 +17,10 @@ public class BookTicketController {
 	
 	public QueryInterface query;
 	public TrainServiceInterface trainService;
-	public OrderServiceInterface orderService;
 	
-	
-	public BookTicketController(TrainServiceInterface trainService, OrderServiceInterface orderService) {
-		this.trainService = trainService;
-		this.orderService = orderService;
-	}
-	
-	public BookTicketController(QueryInterface query, TrainServiceInterface trainService, OrderServiceInterface orderService) {
+	public BookTicketController(QueryInterface query, TrainServiceInterface trainService) {
 		this.query = query;
 		this.trainService = trainService;
-		this.orderService = orderService;
 	}
 	
 	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, int[] ticketTypes) {
@@ -55,28 +47,26 @@ public class BookTicketController {
 		return order;
 	}
 	
+	private void setupTrainCart(Train train) {
+		trainService.initCartList(train);
+		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
+		for(String seatNum : unavailableSeatList)
+			trainService.setUnavailableSeat(train, seatNum);
+	}
+	
 	private void makeSingleBooking(Train train, Order order, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
 		
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
-			Ticket ticket = new Ticket(train, start, end, cartType, seatNumber, discount);
-//			query.addTicket(order.getOrderNumber(), uid, ticket);
-			orderService.addTicket(order, ticket);
+			Ticket ticket = new Ticket(null, train, start, end, cartType, seatNumber, discount);
+			query.addTicket(order.getOrderNumber(), uid, ticket);
+			order.addTicket(ticket);
 		}
-//		if(discount instanceof EarlyBird) 
-//			query.updateEarlyBird(train, discount.getDiscount(), num);
-//		query.updateSeatLeft(train, cartType, num);
+		if(discount instanceof EarlyBird) 
+			query.updateEarlyBird(train, discount.getDiscount(), num);
+		query.updateSeatLeft(train, cartType, num);
 	}
-	
-	private void setupTrainCart(Train train) {
-		trainService.initCartList(train);
-//		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
-//		for(String seatNum : unavailableSeatList)
-//			trainService.setUnavailableSeat(train, seatNum);
-	}
-	
-	
-	
+
 	public static void main(String[] args) {
 
 		String[] trainATimetable = {"1400", "1413", "1421", "1454", "1527", "1535", "1550", "1612", "1627", "1643", "1702", "1720"};
@@ -90,26 +80,13 @@ public class BookTicketController {
 		int[] ticketTypes = {2, 1, 1, 1, 2};
 		
 		
-		BookTicketController bookingHelper = new BookTicketController(new TrainService(), new OrderService());
-		Order myorder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, ticketTypes);
+		BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService());
+		Order myOrder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, ticketTypes);
 		
-		for(Ticket ticket : myorder.getTicketList()) {
-			System.out.println("車票代號: " + ticket.getTicketNumber());
-			System.out.println("車次: " + ticket.getTid());
-			System.out.println("日期: " + ticket.getDate());
-			System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
-			System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")");
-			System.out.println("座位號碼: " + ticket.getSeatNum());
-			System.out.println("票種: " + ticket.getDiscountType().getName());
-			System.out.println("價格: " + ticket.getPrice());
-			System.out.println();
-		}
-		System.out.println("訂單總額:" + myorder.getTotalPrice());
+		myOrder.showTicketDetails();
+		System.out.println("訂單總額:" + myOrder.getTotalPrice());
 		
 		TrainService ts = new TrainService();
 		System.out.println("剩下標準車廂座位: " + ts.getStdSeatNumber(trainA));
 	}
-	
-	
-	
 }
