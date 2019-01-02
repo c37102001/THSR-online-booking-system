@@ -38,8 +38,12 @@ public class Train{
 			this.universityDiscount = new Student70();
 		else if(universityDiscount == 0.85)
 			this.universityDiscount = new Student85();
-		else
+		else if(universityDiscount == 1)
 			this.universityDiscount = new Standard();
+		else {
+			this.universityDiscount = new Standard();
+			System.out.println("Train university discount number error!");
+		}
 		
 		cartList = new ArrayList<Cart>();
 		timetable = new HashMap<String, String>();

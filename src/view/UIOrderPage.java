@@ -140,6 +140,16 @@ public class UIOrderPage extends JFrame {
 		getTrainBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+				//table.setDefaultRenderer(String.class, centerRenderer);
+				int count = table.getColumnCount();
+				for (int i = 0; i < count; i++) {
+					table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+				}
+				table.setRowSelectionAllowed(true);
+				table.setRowHeight(30);
+				
 				SearchTrainController searchMan = new SearchTrainController(new QueryTest(), new TrainService());
 				Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 				
@@ -159,7 +169,7 @@ public class UIOrderPage extends JFrame {
 				
 				/* when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one,
 				 * and it's supposed to return the order/ticket details.
-				 */
+				 
 				BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService());
 				Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
 				
@@ -174,19 +184,11 @@ public class UIOrderPage extends JFrame {
 					System.out.println("價格: " + ticket.getPrice());
 					System.out.println();
 				}
-				System.out.println("訂單總額:" + myorder.getTotalPrice());
+				System.out.println("訂單總額:" + myorder.getTotalPrice());*/
 				
 				
 				
-				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-				//table.setDefaultRenderer(String.class, centerRenderer);
-				int count = table.getColumnCount();
-				for (int i = 0; i < count; i++) {
-					table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-				}
-				table.setRowSelectionAllowed(true);
-				table.setRowHeight(30);
+				
 			}
 		});
 		getTrainBtn.setBounds(250, 70, 0, 0);
