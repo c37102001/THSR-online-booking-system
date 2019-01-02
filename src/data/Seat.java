@@ -18,7 +18,7 @@ public class Seat {
     
     public int getSeatType() {
     	if(seatColumn == 'A' || seatColumn == 'E') return Ticket.SeatWindow;
-    	else if(seatColumn == 'B' || seatColumn == 'D') return Ticket.SeatAisle;
+    	else if(seatColumn == 'C' || seatColumn == 'D') return Ticket.SeatAisle;
     	else return 0;
     }
     
