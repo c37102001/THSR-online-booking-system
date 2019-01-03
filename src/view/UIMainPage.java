@@ -61,7 +61,7 @@ public class UIMainPage extends JFrame {
 	
 	// variables that need to be passed to UIOrderPage;
 	private String uid, startStn, endStn, date, time;
-	private int cartType, seatPrefer, adultNum, elderNum, studentNum, kidNum, priorNum, ticketSum;
+	private int cartType, seatPrefer, adultNum, elderNum, studentNum, kidNum, priorNum;
 			
 	/**
 	 * Launch the application.
@@ -98,7 +98,7 @@ public class UIMainPage extends JFrame {
 		contentPane.setLayout(null);
 		
 		JLabel lblNewLabel_5 = new JLabel("");
-		lblNewLabel_5.setIcon(new ImageIcon("D:\\JAVA\\OOAD1071\\TicketOrderSystem\\img\\logo.jpg"));
+		lblNewLabel_5.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
 		lblNewLabel_5.setBounds(-5, 0, 249, 85);
 		contentPane.add(lblNewLabel_5);
 		
@@ -292,6 +292,7 @@ public class UIMainPage extends JFrame {
 		busCart.setBounds(170, 180, 60, 21);
 		panel.add(busCart);
 		
+		// when the btn onclick, go to UIOrderPage
 		JButton searchCandidateBtn = new JButton("\u8ECA\u6B21\u67E5\u8A62");
 		searchCandidateBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -322,7 +323,6 @@ public class UIMainPage extends JFrame {
 				studentNum = (int)student.getValue();
 				kidNum = (int)kid.getValue();
 				priorNum = (int) prior.getValue();
-				ticketSum = group.getGroupValue();
 				int[] ticketTypes = {adultNum, kidNum, elderNum, priorNum, studentNum};
 				
 				// UIMainPage
