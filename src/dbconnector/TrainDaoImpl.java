@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.apache.commons.dbutils.QueryRunner;
+
+import data.Ticket;
 import data.Train;
 import dbconnector.config.DBUtils;
 
@@ -22,18 +24,11 @@ public class TrainDaoImpl extends QueryAdapter {
 
 	@Override
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType, int ticketQty){
-		Date parseDate = null;
-		try {
-			parseDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
-		} catch (ParseException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
-		date = parseDate.toString();
+		date = date.replace('/', '-');
 
 		String cartCode;
 
-		if (cartType == 0) {
+		if (cartType == Ticket.CartStandard) {
 			cartCode = "std_left";
 		} else {
 			cartCode = "bus_left";
@@ -44,11 +39,13 @@ public class TrainDaoImpl extends QueryAdapter {
 		ResultSet rs = null;
 		Train t = null;
 		List<Train> trains = new ArrayList<Train>();
-		String sql = "select d.`train_id` as tid,d.`date`,d.`early65_lef`t as early65,d.`early80_left` as early80,"
+		String sql = "select d.`train_id` as tid,d.`date`,d.`early65_left` as early65,d.`early80_left` as early80,"
 				+ "d.`early90_left` as early90,d.`student_discount` as universityDiscount,t.`Nangang`,t.`Taipei`,"
 				+ "t.`Banciao`,t.`Taoyuan`,t.`Hsinchu`,t.`Miaoli`,t.`Taichung`,t.`Changhua`,t.`Yunlin`,t.`Chiayi`,"
 				+ "t.`Tainan`,t.`Zuoying` from dailyTrain as d left join timeTable as t on d.train_id = t.train_id "
-				+ "where date = ? and t."+startStation+" > t."+endStation+" and t."+startStation+" > ? and t."+endStation+" > ? and d."+cartCode+" >=? ORDER BY t."+startStation+" ASC";
+				+ "where date = ? and t."+startStation+" < t."+endStation+" and t."+startStation+" > ? and t."+endStation+" > ? and d."+cartCode+" >=? ORDER BY t."+startStation+" ASC";
+		
+		
 		try{
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);

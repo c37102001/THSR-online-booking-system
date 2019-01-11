@@ -27,6 +27,7 @@ import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryTest;
+import dbconnector.TrainDaoImpl;
 import service.TrainService;
 
 public class UIOrderPage extends JFrame {
@@ -48,8 +49,7 @@ public class UIOrderPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UIOrderPage(String uid, String startStn, String endStn, String date,
-			String time, int cartType, int seatPrefer, int[] ticketTypes) {
+	public UIOrderPage(String uid, String startStn, String endStn, String date, String time, int cartType, int seatPrefer, int[] ticketTypes) {
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
@@ -124,13 +124,11 @@ public class UIOrderPage extends JFrame {
 		contentPane.add(label_driveTime);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(25, 161, 309, 335);
 		contentPane.add(scrollPane);
 		
-		TableModel tmodel = new DefaultTableModel(new Object[][] {},
-				new String[] { "車次", startStn, "→", endStn, "行車時間" }) {
+		TableModel tmodel = new DefaultTableModel(new Object[][] {}, new String[] { "車次", startStn, "→", endStn, "行車時間" }) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -151,10 +149,8 @@ public class UIOrderPage extends JFrame {
 		table.setRowHeight(30);
 		
 		// get available train list
-		SearchTrainController searchMan = new SearchTrainController(
-				new QueryTest(), new TrainService());
-		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
-				cartType, ticketTypes);
+		SearchTrainController searchMan = new SearchTrainController(new TrainDaoImpl(), new TrainService());
+		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];
@@ -162,8 +158,7 @@ public class UIOrderPage extends JFrame {
 			String startTime = train.getTimetable(startStn);
 			String arror = "→";
 			String arriveTime = train.getTimetable(endStn);
-			String drivingTime = searchMan.totalTimeCulculator(train, startStn,
-					endStn);
+			String drivingTime = searchMan.getTotalTime(train, startStn, endStn);
 
 			Object[] row = { TID, startTime, arror, arriveTime, drivingTime };
 
@@ -171,30 +166,27 @@ public class UIOrderPage extends JFrame {
 			model.addRow(row);
 		}
 		
-		/*
-		 * // when you manage to let user choose a train, just replace
-		 * "trainList[0]" in bookticket() with the selected one, // and it's
-		 * supposed to return the order/ticket details.
-		 * 
-		 * BookTicketController bookingHelper = new BookTicketController(new
-		 * QueryTest(), new TrainService()); Order myorder =
-		 * bookingHelper.bookTicket(trainList[0], uid, startStn, endStn,
-		 * cartType, seatPrefer, ticketTypes);
-		 * 
-		 * for(Ticket ticket : myorder.getTicketList()) {
-		 * System.out.println("車票代號: " + ticket.getTicketNumber());
-		 * System.out.println("車次: " + ticket.getTid());
-		 * System.out.println("日期: " + ticket.getDate());
-		 * System.out.println("起站: " + ticket.getStart() + "(" +
-		 * ticket.getStime() + ")"); System.out.println("迄站: " + ticket.getEnd()
-		 * + "(" + ticket.getEtime()+ ")"); System.out.println("座位號碼: " +
-		 * ticket.getSeatNum()); System.out.println("票種: " +
-		 * ticket.getDiscountType().getName()); System.out.println("價格: " +
-		 * ticket.getPrice()); System.out.println(); }
-		 * System.out.println("訂單總額:" + myorder.getTotalPrice()); } });
-		 * getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
-		 * contentPane.add(getTrainBtn);
-		 */
+		
+		// when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one, 
+		// and it's supposed to return the order/ticket details.
+
+		BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService()); 
+		Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
+
+		for(Ticket ticket : myorder.getTicketList()) {
+			System.out.println("車票代號: " + ticket.getTicketNumber());
+			System.out.println("車次: " + ticket.getTid());
+			System.out.println("日期: " + ticket.getDate());
+			System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
+			System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")"); 
+			System.out.println("座位號碼: " + ticket.getSeatNum()); 
+			System.out.println("票種: " + ticket.getDiscountType().getName());
+			System.out.println("價格: " + ticket.getPrice()); System.out.println();
+		}
+		System.out.println("訂單總額:" + myorder.getTotalPrice());
+//		getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
+//		contentPane.add(getTrainBtn);
+		 
 		
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){

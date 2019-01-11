@@ -32,35 +32,18 @@ public class SearchTrainController {
 	
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
 		Train[] trainList;
-		startStation = Station.getEngName(startStation);
-		endStation = Station.getEngName(endStation);
 		int ticketQty=0;
 		for(int ticketNum : ticketTypes)
 			ticketQty += ticketNum;
+		startStation = Station.getEngName(startStation);
+		endStation = Station.getEngName(endStation);
+		
 		
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
-		
-		sortTrainByTime(trainList, startStation);
-		
+//		sortTrainByTime(trainList, startStation);
 		return trainList;
 	}
 	
-	private void sortTrainByTime(Train[] trainList, String startStation) {
-
-		Arrays.sort(trainList, new Comparator<Train>() {
-			@Override
-			public int compare(Train train1, Train train2) {
-				int startTime1 = Integer.parseInt(train1.getTimetable(startStation));
-				int startTime2 = Integer.parseInt(train2.getTimetable(startStation));
-				if(startTime1 > startTime2) 
-					return 1;
-				else if(startTime1 < startTime2) 
-					return -1;
-				else
-					return 0;
-			}
-	    });
-	}
 	
 	public int getTotalPrice(Train train, String startStation, String endStation, int cartType, int[] ticketTypes) {
 		int totalPrice = 0;
@@ -83,15 +66,12 @@ public class SearchTrainController {
 		return totalPrice;
 	}
 	
-	public String totalTimeCulculator(Train train, String startStation, String endStation) {
+	public String getTotalTime(Train train, String startStation, String endStation) {
 		
 		String startTime = train.getTimetable(startStation);
 		String endTime = train.getTimetable(endStation);
 		
-		startTime = String.format("%04d", Integer.parseInt(startTime));
-		endTime = String.format("%04d", Integer.parseInt(endTime));
-		
-		SimpleDateFormat format = new SimpleDateFormat("HHmm");
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 		long difference = 0;
 		try {
 			difference = format.parse(endTime).getTime() - format.parse(startTime).getTime();
@@ -123,6 +103,23 @@ public class SearchTrainController {
 		return studentDiscount;
 	}
 	
+	private void sortTrainByTime(Train[] trainList, String startStation) {
+
+		Arrays.sort(trainList, new Comparator<Train>() {
+			@Override
+			public int compare(Train train1, Train train2) {
+				int startTime1 = Integer.parseInt(train1.getTimetable(startStation));
+				int startTime2 = Integer.parseInt(train2.getTimetable(startStation));
+				if(startTime1 > startTime2) 
+					return 1;
+				else if(startTime1 < startTime2) 
+					return -1;
+				else
+					return 0;
+			}
+	    });
+	}
+	
 	public static void main(String[] args) {
 		
 		String startStation = "台北";
@@ -147,7 +144,7 @@ public class SearchTrainController {
 					", 從 " + startStation +"("+ train.getTimetable(startStation) + 
 					") 到 " + endStation +"("+ train.getTimetable(endStation) + 
 					"), 總價:" + searchMan.getTotalPrice(train, startStation, endStation, cartType, ticketTypes) + 
-					", 行車時間:" + searchMan.totalTimeCulculator(train, startStation, endStation) + 
+					", 行車時間:" + searchMan.getTotalTime(train, startStation, endStation) + 
 					searchMan.checkEarlyBird(train, standard) +
 					searchMan.checkStudent(train, student));
 		}
