@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import data.Price;
+import data.Station;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryInterface;
@@ -31,9 +32,12 @@ public class SearchTrainController {
 	
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType, int[] ticketTypes) {
 		Train[] trainList;
+		startStation = Station.getEngName(startStation);
+		endStation = Station.getEngName(endStation);
 		int ticketQty=0;
 		for(int ticketNum : ticketTypes)
 			ticketQty += ticketNum;
+		
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
 		
 		sortTrainByTime(trainList, startStation);
