@@ -4,28 +4,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Order {
-	private String uid;
+
 	private String orderNumber;
+	private String uid;
 	private ArrayList<Ticket> ticketList;
     
-    public Order(String uid) {
-    	this.orderNumber = Integer.toString(Math.abs(new Random().nextInt()));
+    public Order(String orderNumber, String uid) {
+    	this.orderNumber = (orderNumber == null) ? 
+    			Integer.toString(Math.abs(new Random().nextInt())) : orderNumber;
     	this.uid = uid;
     	this.ticketList = new ArrayList<Ticket>();
     }
-    
-    public Order(String uid, String orderNumber) {
-    	this.orderNumber = orderNumber;
-    	this.uid = uid;
-    	this.ticketList = new ArrayList<Ticket>();
-    }
-    
-    public String getUid() {
-		return uid;
-	}
     
 	public String getOrderNumber() {
 		return orderNumber;
+	}
+	
+    public String getUid() {
+		return uid;
 	}
 	
 	public int getTotalPrice() {

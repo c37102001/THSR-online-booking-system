@@ -170,7 +170,7 @@ public class UIOrderPage extends JFrame {
 		// when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one, 
 		// and it's supposed to return the order/ticket details.
 
-		BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService()); 
+		BookTicketController bookingHelper = new BookTicketController(new TrainDaoImpl(), new TrainService()); 
 		Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
 
 		for(Ticket ticket : myorder.getTicketList()) {

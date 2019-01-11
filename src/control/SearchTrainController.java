@@ -35,9 +35,6 @@ public class SearchTrainController {
 		int ticketQty=0;
 		for(int ticketNum : ticketTypes)
 			ticketQty += ticketNum;
-		startStation = Station.getEngName(startStation);
-		endStation = Station.getEngName(endStation);
-		
 		
 		trainList = query.searchTrain(date, startStation, endStation, startTime, cartType, ticketQty);
 //		sortTrainByTime(trainList, startStation);
