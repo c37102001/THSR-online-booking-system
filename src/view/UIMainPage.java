@@ -299,7 +299,7 @@ public class UIMainPage extends JFrame {
 				uid = userID.getText();
 				startStn = startStation.getSelectedItem().toString();
 				endStn = endStation.getSelectedItem().toString();
-				DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd");
+				DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 				date = dateformat.format(dateChooser.getDate());
 				DateFormat timeformat = new SimpleDateFormat("HH:mm");
 				time = timeformat.format(timePicker.getValue());
@@ -330,7 +330,7 @@ public class UIMainPage extends JFrame {
 				orderpage.setVisible(true);
 			}
 		});
-		searchCandidateBtn.setBounds(10, 390, 319, 35);
+		searchCandidateBtn.setBounds(10, 387, 319, 40);
 		panel.add(searchCandidateBtn);
 		
 		/*
@@ -373,13 +373,22 @@ public class UIMainPage extends JFrame {
 		lblNewLabel_3.setBounds(30, 30, 60, 21);
 		panel_2.add(lblNewLabel_3);
 		
-		JButton showTimetableBtn = new JButton("\u67E5\u8A62");
-		showTimetableBtn.setBounds(10, 390, 319, 35);
-		panel_2.add(showTimetableBtn);
-		
 		JDateChooser dateChooser_1 = new JDateChooser();
 		dateChooser_1.setBounds(100, 30, 121, 21);
 		panel_2.add(dateChooser_1);
+		
+		JButton showTimetableBtn = new JButton("\u67E5\u8A62");
+		showTimetableBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+				date = dateformat.format(dateChooser_1.getDate());
+				
+				UITimetablePage timetablepage = new UITimetablePage(date);
+				timetablepage.setVisible(true);
+			}
+		});
+		showTimetableBtn.setBounds(10, 390, 319, 35);
+		panel_2.add(showTimetableBtn);
 	}
 	
 	private class ActionHandler implements ActionListener {

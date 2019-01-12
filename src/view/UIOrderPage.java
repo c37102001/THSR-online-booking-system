@@ -32,6 +32,7 @@ import service.TrainService;
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
+	private String tid, startTime, endTime;
 
 	/**
 	 * @wbp.nonvisual location=104,239
@@ -50,7 +51,7 @@ public class UIOrderPage extends JFrame {
 	 */
 	public UIOrderPage(String uid, String startStn, String endStn, String date,
 			String time, int cartType, int seatPrefer, int[] ticketTypes) {
-
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
 		setResizable(false);
@@ -72,19 +73,19 @@ public class UIOrderPage extends JFrame {
 				dispose();
 			}
 		});
-		btnCancel.setBounds(10, 506, 157, 37);
+		btnCancel.setBounds(10, 513, 163, 40);
 		contentPane.add(btnCancel);
 
 		JButton btnOrder = new JButton("\u78BA\u8A8D\u8A02\u7968");
 		btnOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				UITicketPage ticketpage = new UITicketPage();
+				UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
 				ticketpage.setVisible(true);
 			}
 		});
 		btnOrder.setEnabled(false);
-		btnOrder.setBounds(177, 506, 157, 37);
+		btnOrder.setBounds(181, 513, 163, 40);
 		contentPane.add(btnOrder);
 
 		JLabel label = new JLabel("\u9078\u64C7\u65E5\u671F");
@@ -96,38 +97,12 @@ public class UIOrderPage extends JFrame {
 		label_date.setText(date);
 		contentPane.add(label_date);
 
-		JLabel label_tid = new JLabel("\u8ECA\u6B21");
-		label_tid.setHorizontalAlignment(SwingConstants.CENTER);
-		label_tid.setBounds(30, 130, 60, 21);
-		contentPane.add(label_tid);
-
-		JLabel label_start = new JLabel("\u8D77\u7AD9");
-		label_start.setHorizontalAlignment(SwingConstants.CENTER);
-		label_start.setBounds(90, 130, 60, 21);
-		label_start.setText(startStn);
-		contentPane.add(label_start);
-
-		JLabel label_1 = new JLabel("\u2192");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setBounds(150, 130, 40, 21);
-		contentPane.add(label_1);
-
-		JLabel label_end = new JLabel("\u8FC4\u7AD9");
-		label_end.setHorizontalAlignment(SwingConstants.CENTER);
-		label_end.setBounds(190, 130, 60, 21);
-		label_end.setText(endStn);
-		contentPane.add(label_end);
-
-		JLabel label_driveTime = new JLabel("\u884C\u8ECA\u6642\u9593");
-		label_driveTime.setHorizontalAlignment(SwingConstants.CENTER);
-		label_driveTime.setBounds(250, 130, 60, 21);
-		contentPane.add(label_driveTime);
-
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(25, 161, 309, 335);
+		scrollPane.setBounds(20, 130, 324, 373);
 		contentPane.add(scrollPane);
+		
 		
 		TableModel tmodel = new DefaultTableModel(new Object[][] {},
 				new String[] { "車次", startStn, "→", endStn, "行車時間" }) {
@@ -159,13 +134,13 @@ public class UIOrderPage extends JFrame {
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];
 			String TID = train.getTid();
-			String startTime = train.getTimetable(startStn);
+			String StartTime = train.getTimetable(startStn);
 			String arror = "→";
 			String arriveTime = train.getTimetable(endStn);
 			String drivingTime = searchMan.totalTimeCulculator(train, startStn,
 					endStn);
 
-			Object[] row = { TID, startTime, arror, arriveTime, drivingTime };
+			Object[] row = { TID, StartTime, arror, arriveTime, drivingTime };
 
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			model.addRow(row);
@@ -201,6 +176,9 @@ public class UIOrderPage extends JFrame {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				tid = (String) table.getValueAt(table.getSelectedRow(), 0);
+				startTime = (String) table.getValueAt(table.getSelectedRow(), 1);
+				endTime = (String) table.getValueAt(table.getSelectedRow(), 3);
 				btnOrder.setEnabled(true);
 			}
 			
