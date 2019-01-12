@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -27,12 +26,14 @@ import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryTest;
+import discount.Discount;
 import service.TrainService;
 
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private String tid, startTime, endTime;
+	private Train train;
 
 	/**
 	 * @wbp.nonvisual location=104,239
@@ -50,7 +51,7 @@ public class UIOrderPage extends JFrame {
 	 * Create the frame.
 	 */
 	public UIOrderPage(String uid, String startStn, String endStn, String date,
-			String time, int cartType, int seatPrefer, int[] ticketTypes) {
+			String time, int cartType, int seatPrefer, int[] ticketTypes, Train[] trainList) {
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
@@ -62,10 +63,10 @@ public class UIOrderPage extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel lblNewLabel_5 = new JLabel("");
-		lblNewLabel_5.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
-		lblNewLabel_5.setBounds(-5, 0, 249, 85);
-		contentPane.add(lblNewLabel_5);
+		JLabel icon = new JLabel("");
+		icon.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
+		icon.setBounds(-5, 0, 249, 85);
+		contentPane.add(icon);
 
 		JButton btnCancel = new JButton("\u53D6\u6D88\u8A02\u7968");
 		btnCancel.addActionListener(new ActionListener() {
@@ -80,7 +81,8 @@ public class UIOrderPage extends JFrame {
 		btnOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
+				//UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
+				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, ticketTypes);
 				ticketpage.setVisible(true);
 			}
 		});
@@ -112,7 +114,6 @@ public class UIOrderPage extends JFrame {
 		};
 		table = new JTable();
 		table.setShowGrid(false);
-
 		table.setModel(tmodel);
 		
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -124,13 +125,18 @@ public class UIOrderPage extends JFrame {
 		}
 		table.setRowSelectionAllowed(true);
 		table.setRowHeight(30);
+		table.getColumnModel().getColumn(2).setPreferredWidth(30);
 		
 		// get available train list
 		SearchTrainController searchMan = new SearchTrainController(
 				new QueryTest(), new TrainService());
+		
+		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
 				cartType, ticketTypes);
-
+		
+		Train[] trainTest = {};
+		*/
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];
 			String TID = train.getTid();
@@ -139,13 +145,29 @@ public class UIOrderPage extends JFrame {
 			String arriveTime = train.getTimetable(endStn);
 			String drivingTime = searchMan.totalTimeCulculator(train, startStn,
 					endStn);
-
+			
 			Object[] row = { TID, StartTime, arror, arriveTime, drivingTime };
 
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			model.addRow(row);
+			
+			String earlyBird = searchMan.checkEarlyBird(train, cartType);
+			if (earlyBird == "")
+				earlyBird = "無";
+			
+			String student;
+			if (ticketTypes[4] != 0) {
+				student = searchMan.checkStudent(train, cartType);
+				if (student == "")
+					student = "無";
+				Object[] discount = { "適用優惠", earlyBird, "、", student };
+				model.addRow(discount);
+			} else {
+				Object[] discount = { "適用優惠", earlyBird };
+				model.addRow(discount);
+			}
 		}
-		
+
 		/*
 		 * // when you manage to let user choose a train, just replace
 		 * "trainList[0]" in bookticket() with the selected one, // and it's
@@ -170,19 +192,28 @@ public class UIOrderPage extends JFrame {
 		 * getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
 		 * contentPane.add(getTrainBtn);
 		 */
-		
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				tid = (String) table.getValueAt(table.getSelectedRow(), 0);
-				startTime = (String) table.getValueAt(table.getSelectedRow(), 1);
-				endTime = (String) table.getValueAt(table.getSelectedRow(), 3);
-				btnOrder.setEnabled(true);
-			}
-			
-		});
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()){
+							train = trainList[table.getSelectedRow()/2];
+							//System.out.println("the selected train: " + train.getTid());
+							/*
+							tid = (String) table.getValueAt(table.getSelectedRow(),
+									0);
+							startTime = (String) table.getValueAt(
+									table.getSelectedRow(), 1);
+							endTime = (String) table.getValueAt(
+									table.getSelectedRow(), 3);
+							*/
+							btnOrder.setEnabled(true);
+						}
+						
+					}
+				});
 		scrollPane.setViewportView(table);
 	}
 }
