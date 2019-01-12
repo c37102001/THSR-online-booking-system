@@ -26,7 +26,6 @@ import control.SearchTrainController;
 import data.Order;
 import data.Ticket;
 import data.Train;
-import dbconnector.QueryTest;
 import dbconnector.TrainDaoImpl;
 import service.TrainService;
 

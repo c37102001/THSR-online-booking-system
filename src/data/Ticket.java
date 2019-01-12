@@ -24,14 +24,14 @@ public class Ticket {
 	private Discount discount;
 	private int price;
 	
-	public Ticket(String ticketNumber, Train train, String startStation, String endStation, int cartType, String seatNum, Discount discount) {
+	public Ticket(String ticketNumber, String tid, String date, String start, String end, String stime, String etime, int cartType, String seatNum, Discount discount) {
 		this.ticketNumber = ticketNumber == null ? Integer.toString(Math.abs(new Random().nextInt())) : ticketNumber;
-		this.date = train.getDate();
-		this.tid = train.getTid();
-		this.startStation = startStation;
-		this.endStation = endStation;
-		this.startTime = train.getTimetable(startStation);
-		this.endTime = train.getTimetable(endStation);
+		this.date = date;
+		this.tid = tid;
+		this.startStation = start;
+		this.endStation = end;
+		this.startTime = stime;
+		this.endTime = etime;
 		this.seatNum = seatNum;
 		this.discount = discount;
 		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));

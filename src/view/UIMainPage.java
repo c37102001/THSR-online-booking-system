@@ -299,7 +299,7 @@ public class UIMainPage extends JFrame {
 				uid = userID.getText();
 				startStn = startStation.getSelectedItem().toString();
 				endStn = endStation.getSelectedItem().toString();
-				DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd");
+				DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 				date = dateformat.format(dateChooser.getDate());
 				DateFormat timeformat = new SimpleDateFormat("HH:mm");
 				time = timeformat.format(timePicker.getValue());

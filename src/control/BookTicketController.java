@@ -59,7 +59,7 @@ public class BookTicketController {
 		
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
-			Ticket ticket = new Ticket(null, train, start, end, cartType, seatNumber, discount);
+			Ticket ticket = new Ticket(null, train.getTid(), train.getDate(), start, end, train.getTimetable(start), train.getTimetable(end), cartType, seatNumber, discount);
 			query.addTicket(order.getOrderNumber(), uid, ticket);
 			order.addTicket(ticket);
 		}

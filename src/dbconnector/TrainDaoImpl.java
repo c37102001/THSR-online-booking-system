@@ -11,6 +11,7 @@ import data.Station;
 import data.Ticket;
 import data.Train;
 import dbconnector.config.DBUtils;
+import discount.*;
 
 public class TrainDaoImpl extends QueryAdapter {
 	private Connection conn;
@@ -20,7 +21,6 @@ public class TrainDaoImpl extends QueryAdapter {
 	@Override
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType,
 			int ticketQty) {
-		date = date.replace('/', '-');
 		startStation = Station.getEngName(startStation);
 		endStation = Station.getEngName(endStation);
 		String cartCode = (cartType == Ticket.CartStandard) ? "std_left" : "bus_left";
@@ -71,7 +71,7 @@ public class TrainDaoImpl extends QueryAdapter {
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, train.getTid());
-			ps.setString(2, train.getDate().replace('/', '-'));
+			ps.setString(2, train.getDate());
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				bookedSeats.add(rs.getString(1));
@@ -97,7 +97,7 @@ public class TrainDaoImpl extends QueryAdapter {
 			ps.setString(2, uid);
 			ps.setString(3, orderNumber);
 			ps.setString(4, ticket.getTid());
-			ps.setString(5, ticket.getDate().replace('/', '-'));
+			ps.setString(5, ticket.getDate());
 			ps.setString(6, ticket.getStart());
 			ps.setString(7, ticket.getEnd());
 			ps.setString(8, ticket.getStime());
@@ -136,7 +136,7 @@ public class TrainDaoImpl extends QueryAdapter {
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, train.getTid());
-			ps.setString(2, train.getDate().replace('/', '-'));
+			ps.setString(2, train.getDate());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -156,7 +156,7 @@ public class TrainDaoImpl extends QueryAdapter {
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, train.getTid());
-			ps.setString(2, train.getDate().replace('/', '-'));
+			ps.setString(2, train.getDate());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -164,4 +164,69 @@ public class TrainDaoImpl extends QueryAdapter {
 			DBUtils.close(rs, ps, conn);
 		}
 	}
+	
+	public Ticket[] getOrderTicket(String uid, String orderNumber) {
+		//Ticket(String ticketNumber, String tid, String date, String start, String end, String stime, String etime,
+		//			int cartType, String seatNum, Discount discount)
+		String sql = "SELECT t.`tid`, t.`train_id`, t.`date`, t.`start`, t.`end`, t.`start_time`, t.`end_time`,"
+				+ "t.`seat`, t.`type` FROM tickets AS t WHERE uid = ? AND code = ?";
+		List<Ticket> orderTickets = new ArrayList<Ticket>();
+		
+		try {
+			conn = DBUtils.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, uid);
+			ps.setString(2, orderNumber);
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				String ticketNumber = rs.getString(1);
+				String tid = rs.getString(2);
+				String date = rs.getString(3);
+				String start = rs.getString(4);
+				String end = rs.getString(5);
+				String stime = rs.getString(6);
+				String etime = rs.getString(7);
+				int cartType = rs.getString(8).substring(0, 2).equals("06") ? Ticket.CartStandard : Ticket.CartBusiness;
+				String seatNum = rs.getString(8);
+				Discount discount = getDiscount(rs.getString(9));
+				//Ticket(String ticketNumber, String tid, String date, String start, String end, String stime, String etime,
+				//			int cartType, String seatNum, Discount discount)
+				Ticket ticket = new Ticket(ticketNumber, tid, date, start, end, stime, etime, cartType ,seatNum , discount);
+				orderTickets.add(ticket);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtils.close(rs, ps, conn);
+		}
+		
+		return orderTickets.toArray(new Ticket[0]);
+		
+	};
+
+	public void deleteTicket(Ticket ticket) {
+	}
+
+	public Train[] checkTimetable(String date) {
+		return null;
+	}
+	
+	private Discount getDiscount(String dName) {
+		switch(dName) {
+		case "布": return new Standard();
+		case "担布": return new Children();
+		case "穛ρ布": return new Elderly();
+		case "稲み布": return new NeedLove();
+		case "Ν尘65ч": return new EarlyBird65();
+		case "Ν尘8ч": return new EarlyBird80();
+		case "Ν尘9ч": return new EarlyBird90();
+		case "厩ネ布5ч": return new Student50();
+		case "厩ネ布7ч": return new Student70();
+		case "厩ネ布85ч": return new Student85();
+		default: return new Standard();
+		}
+			
+	}
+	
 }

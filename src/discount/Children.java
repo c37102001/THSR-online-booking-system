@@ -2,7 +2,7 @@ package discount;
 
 public class Children extends DiscountTicket{
 	public Children() {
-		this.name = "兒童票";
+		this.name = "孩童票";
 		this.discount = 0.5;
 	}
 }
