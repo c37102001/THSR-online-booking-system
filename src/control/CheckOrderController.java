@@ -32,16 +32,16 @@ public class CheckOrderController {
 	public static void main(String[] args) {
 		CheckOrderController checkBro = new CheckOrderController(new TrainDaoImpl());
 		
-		String uid = "f";
-		String orderNumber = "1912815423";
+		String uid = "c";
+		String orderNumber = "1508675386";
 		
 		Order myOrder = checkBro.checkOrder(uid, orderNumber);
 		myOrder.showTicketDetails();
-//		
-//		Ticket[] selectedTickets = {myOrder.getTicketList().get(0)};
-//		myOrder = checkBro.deleteTicket(myOrder, selectedTickets);
-//		System.out.println();
-//		myOrder.showTicketDetails();
+		
+		Ticket[] selectedTickets = {myOrder.getTicketList().get(0)};
+		myOrder = checkBro.deleteTicket(myOrder, selectedTickets);
+		System.out.println();
+		myOrder.showTicketDetails();
 		
 	}
 }

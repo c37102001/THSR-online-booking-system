@@ -36,10 +36,7 @@ public class Order {
     }
 	
 	public void deleteTicket(Ticket deleteTicket) {
-		if(ticketList.remove(deleteTicket))
-			System.out.printf("delete ticket number: %s successfully", deleteTicket.getTicketNumber());
-		else
-			System.out.println("delete error: ticket not found");
+		ticketList.remove(deleteTicket);
 	}
 	
 	public ArrayList<Ticket> getTicketList(){

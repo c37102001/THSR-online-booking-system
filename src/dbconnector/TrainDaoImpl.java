@@ -130,7 +130,7 @@ public class TrainDaoImpl extends QueryAdapter {
 			break;
 		}
 
-		String sql = "update dailyTrain set " + earlyCode + " where train_id=? and date=?";
+		String sql = "UPDATE dailyTrain SET " + earlyCode + " WHERE train_id=? AND date=?";
 		
 		try {
 			conn = DBUtils.getConnection();
@@ -150,7 +150,7 @@ public class TrainDaoImpl extends QueryAdapter {
 		
 		String seatType = (cartType == Ticket.CartStandard) ? ("std_left = std_left - " + num) : ("bus_left = bus_left - " + num);
 		
-		String sql = "update dailyTrain set " + seatType + " where train_id=? and date=?";
+		String sql = "UPDATE dailyTrain SET " + seatType + " WHERE train_id=? AND date=?";
 		
 		try {
 			conn = DBUtils.getConnection();
@@ -206,6 +206,18 @@ public class TrainDaoImpl extends QueryAdapter {
 	};
 
 	public void deleteTicket(Ticket ticket) {
+		String sql = "DELETE FROM tickets WHERE tid=?";
+		
+		try {
+			conn = DBUtils.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, ticket.getTicketNumber());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtils.close(rs, ps, conn);
+		}
 	}
 
 	public Train[] checkTimetable(String date) {

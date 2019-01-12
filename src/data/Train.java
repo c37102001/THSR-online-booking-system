@@ -42,7 +42,6 @@ public class Train{
 			this.universityDiscount = new Standard();
 		else {
 			this.universityDiscount = new Standard();
-			System.out.println("Train university discount number error!");
 		}
 		
 		cartList = new ArrayList<Cart>();
