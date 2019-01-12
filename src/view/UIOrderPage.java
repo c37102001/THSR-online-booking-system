@@ -169,23 +169,24 @@ public class UIOrderPage extends JFrame {
 		
 		// when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one, 
 		// and it's supposed to return the order/ticket details.
-
-		BookTicketController bookingHelper = new BookTicketController(new TrainDaoImpl(), new TrainService()); 
-		Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
-
-		for(Ticket ticket : myorder.getTicketList()) {
-			System.out.println("車票代號: " + ticket.getTicketNumber());
-			System.out.println("車次: " + ticket.getTid());
-			System.out.println("日期: " + ticket.getDate());
-			System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
-			System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")"); 
-			System.out.println("座位號碼: " + ticket.getSeatNum()); 
-			System.out.println("票種: " + ticket.getDiscountType().getName());
-			System.out.println("價格: " + ticket.getPrice()); System.out.println();
+		if(trainList.length != 0) {
+			BookTicketController bookingHelper = new BookTicketController(new TrainDaoImpl(), new TrainService()); 
+			Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
+	
+			for(Ticket ticket : myorder.getTicketList()) {
+				System.out.println("車票代號: " + ticket.getTicketNumber());
+				System.out.println("車次: " + ticket.getTid());
+				System.out.println("日期: " + ticket.getDate());
+				System.out.println("起站: " + ticket.getStart() + "(" + ticket.getStime() + ")");
+				System.out.println("迄站: " + ticket.getEnd() + "(" + ticket.getEtime()+ ")"); 
+				System.out.println("座位號碼: " + ticket.getSeatNum()); 
+				System.out.println("票種: " + ticket.getDiscountType().getName());
+				System.out.println("價格: " + ticket.getPrice()); System.out.println();
+			}
+			System.out.println("訂單總額:" + myorder.getTotalPrice());
+	//		getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
+	//		contentPane.add(getTrainBtn);
 		}
-		System.out.println("訂單總額:" + myorder.getTotalPrice());
-//		getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
-//		contentPane.add(getTrainBtn);
 		 
 		
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

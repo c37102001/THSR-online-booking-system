@@ -4,13 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-
-import org.apache.commons.dbutils.QueryRunner;
 
 import data.Station;
 import data.Ticket;
@@ -18,11 +13,9 @@ import data.Train;
 import dbconnector.config.DBUtils;
 
 public class TrainDaoImpl extends QueryAdapter {
-	private QueryRunner runner = null;
-
-	public TrainDaoImpl() {
-		runner = new QueryRunner();
-	}
+	private Connection conn;
+	private PreparedStatement ps;
+	private ResultSet rs;
 
 	@Override
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType,
@@ -32,9 +25,7 @@ public class TrainDaoImpl extends QueryAdapter {
 		endStation = Station.getEngName(endStation);
 		String cartCode = (cartType == Ticket.CartStandard) ? "std_left" : "bus_left";
 
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+		
 		Train t = null;
 		List<Train> trains = new ArrayList<Train>();
 		String sql = "select d.`train_id` as tid,d.`date`,d.`early65_left` as early65,d.`early80_left` as early80,"
@@ -72,9 +63,6 @@ public class TrainDaoImpl extends QueryAdapter {
 	}
 
 	public String[] getUnavailableSeatList(Train train) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		List<String> bookedSeats = new ArrayList<String>();
 
 		String sql = "SELECT tickets.`seat` FROM tickets WHERE train_id = ? AND date = ?";
@@ -86,7 +74,6 @@ public class TrainDaoImpl extends QueryAdapter {
 			ps.setString(2, train.getDate().replace('/', '-'));
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				System.out.println("DAO check : " + rs.getString(1));
 				bookedSeats.add(rs.getString(1));
 			}
 		} catch (SQLException e) {
@@ -99,9 +86,6 @@ public class TrainDaoImpl extends QueryAdapter {
 	}
 
 	public void addTicket(String orderNumber, String uid, Ticket ticket) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 
 		String sql = "INSERT INTO `thsr`.`tickets` (`tid`, `uid`, `code`, `train_id`, `date`, `start`, `end`,"
 				+ " `start_time`, `end_time`, `type`, `seat`, `price`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -131,72 +115,53 @@ public class TrainDaoImpl extends QueryAdapter {
 	}
 
 	@Override
-	public void updateEarlyBird(Train t, double earlyBirdDiscount, int num) {
-		String earlyCode;
-		String numberLeft = Integer.toString(num);
-		Date parseDate = null;
-		try {
-			parseDate = new SimpleDateFormat("yyyy-MM-dd").parse(t.getDate());
-		} catch (ParseException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
-		String date = parseDate.toString();
+	public void updateEarlyBird(Train train, double earlyBirdDiscount, int num) {
+		String earlyCode="";
 
 		switch (Double.toString(earlyBirdDiscount)) {
 		case "0.65":
-			earlyCode = "early65_left=" + numberLeft;
+			earlyCode = "early65_left = early65_left - " + num;
 			break;
 		case "0.8":
-			earlyCode = "early80_left=" + numberLeft;
+			earlyCode = "early80_left = early80_left - " + num;
 			break;
 		case "0.9":
-			earlyCode = "early90_left=" + numberLeft;
+			earlyCode = "early90_left = early90_left - " + num;
 			break;
-		default:
-			earlyCode = "";
 		}
 
 		String sql = "update dailyTrain set " + earlyCode + " where train_id=? and date=?";
-
+		
 		try {
-			runner.update(DBUtils.getConnection(), sql, t.getTid(), date);
+			conn = DBUtils.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, train.getTid());
+			ps.setString(2, train.getDate().replace('/', '-'));
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtils.close(rs, ps, conn);
 		}
 	}
 
 	@Override
-	public void updateSeatLeft(Train t, int cartType, int num) {
-		String cartCode;
-
-		String numberLeft = Integer.toString(num);
-
-		Date parseDate = null;
+	public void updateSeatLeft(Train train, int cartType, int num) {
+		
+		String seatType = (cartType == Ticket.CartStandard) ? ("std_left = std_left - " + num) : ("bus_left = bus_left - " + num);
+		
+		String sql = "update dailyTrain set " + seatType + " where train_id=? and date=?";
+		
 		try {
-			parseDate = new SimpleDateFormat("yyyy-MM-dd").parse(t.getDate());
-		} catch (ParseException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
-		String date = parseDate.toString();
-
-		switch (cartType) {
-		case 0:
-			cartCode = "std_left=" + numberLeft;
-			break;
-		case 1:
-			cartCode = "bus_left=" + numberLeft;
-			break;
-		default:
-			cartCode = "";
-		}
-
-		String sql = "update dailyTrain set " + cartCode + " where train_id=? and date=?";
-		try {
-			runner.update(DBUtils.getConnection(), sql, t.getTid(), date);
+			conn = DBUtils.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, train.getTid());
+			ps.setString(2, train.getDate().replace('/', '-'));
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtils.close(rs, ps, conn);
 		}
 	}
 }

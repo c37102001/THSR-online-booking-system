@@ -50,8 +50,9 @@ public class BookTicketController {
 	private void setupTrainCart(Train train) {
 		trainService.initCartList(train);
 		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... }
-		for(String seatNum : unavailableSeatList)
+		for(String seatNum : unavailableSeatList) {
 			trainService.setUnavailableSeat(train, seatNum);
+		}
 	}
 	
 	private void makeSingleBooking(Train train, Order order, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
@@ -62,9 +63,9 @@ public class BookTicketController {
 			query.addTicket(order.getOrderNumber(), uid, ticket);
 			order.addTicket(ticket);
 		}
-//		if(discount instanceof EarlyBird) 
-//			query.updateEarlyBird(train, discount.getDiscount(), num);
-//		query.updateSeatLeft(train, cartType, num);
+		if(discount instanceof EarlyBird) 
+			query.updateEarlyBird(train, discount.getDiscount(), num);
+		query.updateSeatLeft(train, cartType, num);
 	}
 
 	public static void main(String[] args) {
