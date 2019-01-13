@@ -20,15 +20,17 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import control.ControlManager;
 import control.SearchTrainController;
 import data.Train;
 import dbconnector.Query;
+import discount.EarlyBird;
 import service.TrainService;
 
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
-	private String tid, startTime, endTime, discount;
+	private String tid, startTime, endTime;
 	private Train train;
 
 	/**
@@ -78,8 +80,7 @@ public class UIOrderPage extends JFrame {
 		btnOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				//UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
-				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, seatPrefer, ticketTypes, discount);
+				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, seatPrefer, ticketTypes);
 				ticketpage.setVisible(true);
 			}
 		});
@@ -147,9 +148,9 @@ public class UIOrderPage extends JFrame {
 			model.addRow(row);
 			String earlyBird = "";
 			String student="";
-			if(ticketTypes[0]!=0) 
+			if(ticketTypes[0]!=0 && !ControlManager.checkEarlyBird(train, ticketTypes[0]).equals("")) 
 				earlyBird = searchMan.checkEarlyBird(train, cartType);
-			if (ticketTypes[4] != 0) 
+			if (ticketTypes[4] != 0 && !ControlManager.checkStudent(train, ticketTypes[4]).equals("")) 
 				student = searchMan.checkStudent(train, cartType);
 			
 			if(!earlyBird.equals(""))
@@ -158,8 +159,6 @@ public class UIOrderPage extends JFrame {
 				model.addRow(new Object[] { "適用優惠", student});
 			else 
 				model.addRow(new Object[] { "適用優惠", "無"});
-			
-			discount = (earlyBird + student).equals("") ? "無" : earlyBird + student;
 		}
 
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -379,15 +379,15 @@ public class UIMainPage extends JFrame {
 					JOptionPane.showMessageDialog(null, "使用者ID與訂單編號不可為空，請重新輸入。", "輸入錯誤！", JOptionPane.INFORMATION_MESSAGE);
 				}
 				else {
-					CheckOrderController checkTicket = new CheckOrderController(new QueryTest());
+					CheckOrderController checkTicket = new CheckOrderController(new Query());
 					Order order = checkTicket.checkOrder(uid, orderNum);
 					
 					if (order.getTicketList().size() == 0){
 						JOptionPane.showMessageDialog(null, "查無訂單，請重新查詢。", "查詢無結果！", JOptionPane.INFORMATION_MESSAGE);
 					}
 					else {
-						order.showTicketDetails();
-						System.out.println("tickets in the order: " + order.getTicketList().size());
+//						order.showTicketDetails();
+//						System.out.println("tickets in the order: " + order.getTicketList().size());
 						UIShowOrderPage showOrderpage = new UIShowOrderPage(uid, orderNum, order);
 						showOrderpage.setVisible(true);
 					}

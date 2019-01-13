@@ -19,6 +19,7 @@ import data.Ticket;
 import data.Train;
 import dbconnector.Query;
 import service.TrainService;
+import javax.swing.SwingConstants;
 
 public class UITicketPage extends JFrame {
 
@@ -44,16 +45,24 @@ public class UITicketPage extends JFrame {
 	 * Create the frame.
 	 */
 
-	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, int[] ticketTypes, String discount) {
+	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, int[] ticketTypes) {
 		
 		String tid = train.getTid();
 		String startTime = train.getTimetable(startStn);
 		String endTime = train.getTimetable(endStn);
 		
+		String earlyBird = "";
+		String student = "";
+		if(ticketTypes[0]!=0 && !ControlManager.checkEarlyBird(train, ticketTypes[0]).equals("")) 
+			earlyBird = ControlManager.checkEarlyBird(train, cartType);
+		if (ticketTypes[4] != 0 && !ControlManager.checkStudent(train, ticketTypes[4]).equals("")) 
+			student = ControlManager.checkStudent(train, cartType);
+		String discount = (earlyBird + student).equals("") ? "µL" : earlyBird + "\n" + student;
+		
 		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(350, 100, 360, 592);
+		setBounds(350, 100, 381, 592);
 		setResizable(false);
 		
 		contentPane = new JPanel();
@@ -103,7 +112,8 @@ public class UITicketPage extends JFrame {
 		contentPane.add(label_discount);
 		
 		JLabel showDiscount = new JLabel("New label");
-		showDiscount.setBounds(240, 170, 85, 21);
+		showDiscount.setVerticalAlignment(SwingConstants.TOP);
+		showDiscount.setBounds(240, 170, 145, 56);
 		showDiscount.setText(discount);
 		contentPane.add(showDiscount);
 		
@@ -128,7 +138,7 @@ public class UITicketPage extends JFrame {
 				dispose();
 			}
 		});
-		btnConfirm.setBounds(10, 513, 334, 40);
+		btnConfirm.setBounds(20, 512, 334, 40);
 		contentPane.add(btnConfirm);
 		
 		JLabel label_adult = new JLabel("\u5168\u7968");

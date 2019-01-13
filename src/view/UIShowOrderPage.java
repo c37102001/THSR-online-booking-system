@@ -6,33 +6,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import control.CheckOrderController;
 import data.Order;
 import data.Ticket;
-import dbconnector.QueryTest;
-import discount.Discount;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.ListSelectionModel;
+import dbconnector.Query;
 
 public class UIShowOrderPage extends JFrame {
 
@@ -62,7 +55,7 @@ public class UIShowOrderPage extends JFrame {
 	 */
 	public UIShowOrderPage(String uid, String orderNum, Order order) {
 		
-		CheckOrderController deleteTicket = new CheckOrderController(new QueryTest());
+		CheckOrderController deleteTicket = new CheckOrderController(new Query());
 		ArrayList<Ticket> tickets = order.getTicketList();
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -134,7 +127,7 @@ public class UIShowOrderPage extends JFrame {
 			String start = ticket.getStart() + "(" + ticket.getStime() + ") → ";
 			String end = ticket.getEnd() + "(" + ticket.getEtime() + ")\n";
 			String seat;
-			if (ticket.getTicketType() == Ticket.CartStandard){
+			if (ticket.getCartType() == Ticket.CartStandard){
 				seat = "標準廂：" + ticket.getSeatNum() + "\n";
 			} else {
 				seat = "商務廂：" + ticket.getSeatNum() + "\n";
@@ -164,7 +157,7 @@ public class UIShowOrderPage extends JFrame {
 				
 				ArrayList<Ticket> deleteT = new ArrayList<Ticket>();
 				int[] selected = table.getSelectedRows();
-				for (int i=0; i<selected.length; i++){
+				for (int i : selected){
 					//System.out.println(selected[i]);
 					deleteT.add(tickets.get(i));
 				}
