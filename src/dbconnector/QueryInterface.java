@@ -1,6 +1,4 @@
 package dbconnector;
-import java.sql.SQLException;
-
 import data.Ticket;
 import data.Train;
 

@@ -18,7 +18,7 @@ public class DBUtils {
     // mysql的驱动类
     public static String DRIVER;
 
-    private static ResourceBundle rb = ResourceBundle.getBundle("util.db.db-config");
+    private static ResourceBundle rb = ResourceBundle.getBundle("dbconnector.config.db-config");
 
     private DBUtils() {
     }

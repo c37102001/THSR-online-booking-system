@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="commons-dbutils-1.7-javadoc.jar"/>
 	<classpathentry kind="lib" path="commons-dbutils-1.7.jar"/>
 	<classpathentry kind="lib" path="mysql-connector-java-8.0.13.jar"/>
+	<classpathentry kind="lib" path="json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
