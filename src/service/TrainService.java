@@ -58,8 +58,9 @@ public class TrainService implements TrainServiceInterface{
 				return cart.bookSeat(seatPrefer);
 			else if(seatPrefer == Ticket.SeatAisle && cart.getAisleSeatNum()>0) 
 				return cart.bookSeat(seatPrefer);
-			else 
+			else if(cart.getTotalSeatNum()>0)
 				return cart.bookSeat();
+			else continue;
 		}
 		return "";
 	}
