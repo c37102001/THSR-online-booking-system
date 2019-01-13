@@ -43,8 +43,8 @@ public class UITicketPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, 
-			int[] ticketTypes, String discount) {
+
+	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, int[] ticketTypes, String discount) {
 		
 		String tid = train.getTid();
 		String startTime = train.getTimetable(startStn);

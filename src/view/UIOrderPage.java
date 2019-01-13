@@ -130,8 +130,6 @@ public class UIOrderPage extends JFrame {
 		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
 				cartType, ticketTypes);
-		
-		Train[] trainTest = {};
 		*/
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];
