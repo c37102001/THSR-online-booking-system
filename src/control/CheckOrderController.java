@@ -42,6 +42,5 @@ public class CheckOrderController {
 		myOrder = checkBro.deleteTicket(myOrder, selectedTickets);
 		System.out.println();
 		myOrder.showTicketDetails();
-		
 	}
 }

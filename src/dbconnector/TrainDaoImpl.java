@@ -220,8 +220,39 @@ public class TrainDaoImpl extends QueryAdapter {
 		}
 	}
 
-	public Train[] checkTimetable(String date) {
-		return null;
+	public Train[] checkTimetable(String date, int direction) {
+		
+		String startStation = direction == 0 ? "Nangang" : "Zuoying";
+		Train t = null;
+		List<Train> trains = new ArrayList<Train>();
+		String sql = "select d.`train_id` as tid,d.`date`,d.`early65_left` as early65,d.`early80_left` as early80,"
+				+ "d.`early90_left` as early90,d.`student_discount` as universityDiscount,t.`Nangang`,t.`Taipei`,"
+				+ "t.`Banciao`,t.`Taoyuan`,t.`Hsinchu`,t.`Miaoli`,t.`Taichung`,t.`Changhua`,t.`Yunlin`,t.`Chiayi`,"
+				+ "t.`Tainan`,t.`Zuoying` from dailyTrain as d left join timeTable as t on d.train_id = t.train_id "
+				+ "where date = ? and t.`direction` = " + direction + " ORDER BY t." + startStation + " ASC";
+
+		try {
+			conn = DBUtils.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, date);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				// Train(String tid, String date, int earlyBird65, int earlyBird80, int
+				// earlyBird90,
+				// double universityDiscount, String[] time)
+				String[] timeString = new String[] { rs.getString(7), rs.getString(8), rs.getString(9),
+						rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14),
+						rs.getString(15), rs.getString(16), rs.getString(17), rs.getString(18) };
+				t = new Train(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getInt(5),
+						rs.getDouble(6), timeString);
+				trains.add(t);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtils.close(rs, ps, conn);
+		}
+		return trains.toArray(new Train[0]);
 	}
 	
 	private Discount getDiscount(String dName) {

@@ -1,7 +1,5 @@
 package dbconnector;
 
-import java.sql.SQLException;
-
 import data.Ticket;
 import data.Train;
 
@@ -39,7 +37,7 @@ public class QueryAdapter implements QueryInterface {
 	}
 
 	@Override
-	public Train[] checkTimetable(String date) {
+	public Train[] checkTimetable(String date, int direction) {
 		return null;
 	}
 

@@ -50,8 +50,10 @@ public class BookTicketController {
 	private void setupTrainCart(Train train) {
 		trainService.initCartList(train);
 		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... }
-		for(String seatNum : unavailableSeatList) {
-			trainService.setUnavailableSeat(train, seatNum);
+		if(unavailableSeatList.length != 0) {
+			for(String seatNum : unavailableSeatList) {
+				trainService.setUnavailableSeat(train, seatNum);
+			}
 		}
 	}
 	

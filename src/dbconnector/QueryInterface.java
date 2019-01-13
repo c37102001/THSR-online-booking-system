@@ -19,6 +19,6 @@ public interface QueryInterface {
 
 	public void deleteTicket(Ticket ticket);
 
-	public Train[] checkTimetable(String date);
+	public Train[] checkTimetable(String date, int direction);
 	
 }

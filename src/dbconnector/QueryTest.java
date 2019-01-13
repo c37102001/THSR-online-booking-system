@@ -49,7 +49,7 @@ public class QueryTest implements QueryInterface{
 	}
 
 	@Override
-	public Train[] checkTimetable(String date) {
+	public Train[] checkTimetable(String date, int direction) {
 		// TODO Auto-generated method stub
 		return null;
 	}
