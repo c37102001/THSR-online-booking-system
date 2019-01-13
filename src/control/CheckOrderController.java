@@ -3,7 +3,7 @@ package control;
 import data.Order;
 import data.Ticket;
 import dbconnector.QueryInterface;
-import dbconnector.TrainDaoImpl;
+import dbconnector.Query;
 
 public class CheckOrderController {
 	private QueryInterface query;
@@ -30,7 +30,7 @@ public class CheckOrderController {
 	}
 
 	public static void main(String[] args) {
-		CheckOrderController checkBro = new CheckOrderController(new TrainDaoImpl());
+		CheckOrderController checkBro = new CheckOrderController(new Query());
 		
 		String uid = "c";
 		String orderNumber = "1508675386";

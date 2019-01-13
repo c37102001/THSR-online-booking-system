@@ -13,7 +13,7 @@ import data.Train;
 import dbconnector.config.DBUtils;
 import discount.*;
 
-public class TrainDaoImpl extends QueryAdapter {
+public class Query implements QueryInterface {
 	private Connection conn;
 	private PreparedStatement ps;
 	private ResultSet rs;

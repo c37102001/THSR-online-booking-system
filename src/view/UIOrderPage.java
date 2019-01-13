@@ -26,7 +26,7 @@ import control.SearchTrainController;
 import data.Order;
 import data.Ticket;
 import data.Train;
-import dbconnector.TrainDaoImpl;
+import dbconnector.Query;
 import service.TrainService;
 
 public class UIOrderPage extends JFrame {
@@ -148,7 +148,7 @@ public class UIOrderPage extends JFrame {
 		table.setRowHeight(30);
 		
 		// get available train list
-		SearchTrainController searchMan = new SearchTrainController(new TrainDaoImpl(), new TrainService());
+		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 
 		for (int i = 0; i < trainList.length; i++) {
@@ -169,7 +169,7 @@ public class UIOrderPage extends JFrame {
 		// when you manage to let user choose a train, just replace "trainList[0]" in bookticket() with the selected one, 
 		// and it's supposed to return the order/ticket details.
 		if(trainList.length != 0) {
-			BookTicketController bookingHelper = new BookTicketController(new TrainDaoImpl(), new TrainService()); 
+			BookTicketController bookingHelper = new BookTicketController(new Query(), new TrainService()); 
 			Order myorder = bookingHelper.bookTicket(trainList[0], uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
 	
 			for(Ticket ticket : myorder.getTicketList()) {
