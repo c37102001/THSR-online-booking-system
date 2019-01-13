@@ -1,52 +1,43 @@
 package view;
 
+import java.awt.Color;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.SwingConstants;
-
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import other.GroupSpinner;
-
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
-import javax.swing.JSpinner;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-
-import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.toedter.calendar.JDateChooser;
 
 import control.SearchTrainController;
 import data.Ticket;
 import data.Train;
-import dbconnector.QueryTest;
-
-import javax.swing.SpinnerDateModel;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-
+import dbconnector.Query;
+import other.GroupSpinner;
 import service.TrainService;
-
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 public class UIMainPage extends JFrame {
 	
@@ -335,10 +326,8 @@ public class UIMainPage extends JFrame {
 					
 					// UIMainPage
 					// get available train list
-					SearchTrainController searchMan = new SearchTrainController(
-							new QueryTest(), new TrainService());
-					Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
-							cartType, ticketTypes);
+					SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+					Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 
 					if (trainList.length == 0) {
 						JOptionPane.showMessageDialog(null, "您選擇的時段已額滿，或尚未開放銷售，請重新查詢。", "無符合車次！", JOptionPane.INFORMATION_MESSAGE);

@@ -28,7 +28,7 @@ import service.TrainService;
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
-	private String tid, startTime, endTime;
+	private String tid, startTime, endTime, discount;
 	private Train train;
 
 	/**
@@ -79,7 +79,7 @@ public class UIOrderPage extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				//UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
-				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, ticketTypes);
+				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, seatPrefer, ticketTypes, discount);
 				ticketpage.setVisible(true);
 			}
 		});
@@ -125,8 +125,7 @@ public class UIOrderPage extends JFrame {
 		table.getColumnModel().getColumn(2).setPreferredWidth(30);
 		
 		// get available train list
-		SearchTrainController searchMan = new SearchTrainController(
-				new Query(), new TrainService());
+		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		
 		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
@@ -148,48 +147,22 @@ public class UIOrderPage extends JFrame {
 
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			model.addRow(row);
-			
-			String earlyBird = searchMan.checkEarlyBird(train, cartType);
-			if (earlyBird == "")
-				earlyBird = "無";
-			
-			String student;
-			if (ticketTypes[4] != 0) {
+			String earlyBird = "";
+			String student="";
+			if(ticketTypes[0]!=0) 
+				earlyBird = searchMan.checkEarlyBird(train, cartType);
+			if (ticketTypes[4] != 0) 
 				student = searchMan.checkStudent(train, cartType);
-				if (student == "")
-					student = "無";
-				Object[] discount = { "適用優惠", earlyBird, "、", student };
-				model.addRow(discount);
-			} else {
-				Object[] discount = { "適用優惠", earlyBird };
-				model.addRow(discount);
-			}
+			
+			if(!earlyBird.equals(""))
+				model.addRow(new Object[] { "適用優惠", earlyBird, "", student});
+			else if(!student.equals("")) 
+				model.addRow(new Object[] { "適用優惠", student});
+			else 
+				model.addRow(new Object[] { "適用優惠", "無"});
+			
+			discount = (earlyBird + student).equals("") ? "無" : earlyBird + student;
 		}
-
-		/*
-		 * // when you manage to let user choose a train, just replace
-		 * "trainList[0]" in bookticket() with the selected one, // and it's
-		 * supposed to return the order/ticket details.
-		 * 
-		 * BookTicketController bookingHelper = new BookTicketController(new
-		 * QueryTest(), new TrainService()); Order myorder =
-		 * bookingHelper.bookTicket(trainList[0], uid, startStn, endStn,
-		 * cartType, seatPrefer, ticketTypes);
-		 * 
-		 * for(Ticket ticket : myorder.getTicketList()) {
-		 * System.out.println("車票代號: " + ticket.getTicketNumber());
-		 * System.out.println("車次: " + ticket.getTid());
-		 * System.out.println("日期: " + ticket.getDate());
-		 * System.out.println("起站: " + ticket.getStart() + "(" +
-		 * ticket.getStime() + ")"); System.out.println("迄站: " + ticket.getEnd()
-		 * + "(" + ticket.getEtime()+ ")"); System.out.println("座位號碼: " +
-		 * ticket.getSeatNum()); System.out.println("票種: " +
-		 * ticket.getDiscountType().getName()); System.out.println("價格: " +
-		 * ticket.getPrice()); System.out.println(); }
-		 * System.out.println("訂單總額:" + myorder.getTotalPrice()); } });
-		 * getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
-		 * contentPane.add(getTrainBtn);
-		 */
 
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(
@@ -198,15 +171,6 @@ public class UIOrderPage extends JFrame {
 					public void valueChanged(ListSelectionEvent e) {
 						if (e.getValueIsAdjusting()){
 							train = trainList[table.getSelectedRow()/2];
-							//System.out.println("the selected train: " + train.getTid());
-							/*
-							tid = (String) table.getValueAt(table.getSelectedRow(),
-									0);
-							startTime = (String) table.getValueAt(
-									table.getSelectedRow(), 1);
-							endTime = (String) table.getValueAt(
-									table.getSelectedRow(), 3);
-							*/
 							btnOrder.setEnabled(true);
 						}
 						

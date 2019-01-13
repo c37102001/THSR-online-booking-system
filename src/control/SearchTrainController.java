@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import data.Price;
-import data.Station;
 import data.Ticket;
 import data.Train;
+import dbconnector.Query;
 import dbconnector.QueryInterface;
-import dbconnector.QueryTest;
 import discount.Children;
 import discount.EarlyBird;
 import discount.Elderly;
@@ -85,7 +84,7 @@ public class SearchTrainController {
 	public String checkEarlyBird(Train train, int standardT) {
 		String earlyBirdDiscount = "";
 		if(standardT != 0 && trainService.checkEarlyBird(train, standardT) instanceof EarlyBird)
-			earlyBirdDiscount = ", " + new TrainService().checkEarlyBird(train, standardT).getName();
+			earlyBirdDiscount = new TrainService().checkEarlyBird(train, standardT).getName();
 		else
 			earlyBirdDiscount = "";
 		return earlyBirdDiscount;
@@ -94,7 +93,7 @@ public class SearchTrainController {
 	public String checkStudent(Train train, int studentT) {
 		String studentDiscount = "";
 		if(studentT != 0 && train.getUniversityDiscount() instanceof Student)
-			studentDiscount = ", " + train.getUniversityDiscount().getName();
+			studentDiscount = train.getUniversityDiscount().getName();
 		else
 			studentDiscount = "";
 		return studentDiscount;
@@ -132,7 +131,7 @@ public class SearchTrainController {
 		int student = 2;
 		int[] ticketTypes = {standard, children, elderly, needlove, student};
 		
-		SearchTrainController searchMan = new SearchTrainController(new QueryTest(), new TrainService());
+		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		Train[] sortedTrainList = searchMan.searchTrain(date, startStation, endStation, startTime, cartType, ticketTypes);
 		
 		for(Train train : sortedTrainList) {

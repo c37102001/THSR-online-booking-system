@@ -3,8 +3,8 @@ package control;
 import data.Order;
 import data.Ticket;
 import data.Train;
+import dbconnector.Query;
 import dbconnector.QueryInterface;
-import dbconnector.QueryTest;
 import discount.Children;
 import discount.Discount;
 import discount.EarlyBird;
@@ -83,7 +83,7 @@ public class BookTicketController {
 		int[] ticketTypes = {2, 1, 1, 1, 2};
 		
 		
-		BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService());
+		BookTicketController bookingHelper = new BookTicketController(new Query(), new TrainService());
 		Order myOrder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, ticketTypes);
 		
 		myOrder.showTicketDetails();

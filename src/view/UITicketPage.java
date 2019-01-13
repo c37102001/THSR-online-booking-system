@@ -1,30 +1,24 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
+import control.ControlManager;
+import control.SearchTrainController;
+import data.Order;
 import data.Ticket;
 import data.Train;
-import dbconnector.QueryTest;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import javax.swing.SwingConstants;
-
+import dbconnector.Query;
 import service.TrainService;
-import control.SearchTrainController;
 
 public class UITicketPage extends JFrame {
 
@@ -49,26 +43,14 @@ public class UITicketPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int[] ticketTypes) {
+	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, 
+			int[] ticketTypes, String discount) {
 		
 		String tid = train.getTid();
 		String startTime = train.getTimetable(startStn);
 		String endTime = train.getTimetable(endStn);
 		
-		SearchTrainController searchMan = new SearchTrainController(
-				new QueryTest(), new TrainService());
-		
-		System.out.println("uid: " + uid);
-		System.out.println("date: " + date);
-		System.out.println("tid: " + tid);
-		System.out.println("start: " + startStn + " " + startTime);
-		System.out.println("end: " + endStn + " " + endTime);
-		System.out.println("cart: " + cartType);
-		System.out.println("adultNum: " + ticketTypes[0]);
-		System.out.println("kidNum: " + ticketTypes[1]);
-		System.out.println("elderNum: " + ticketTypes[2]);
-		System.out.println("priorNum: " + ticketTypes[3]);
-		System.out.println("studentNum: " + ticketTypes[4]);
+		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
@@ -122,6 +104,7 @@ public class UITicketPage extends JFrame {
 		
 		JLabel showDiscount = new JLabel("New label");
 		showDiscount.setBounds(240, 170, 85, 21);
+		showDiscount.setText(discount);
 		contentPane.add(showDiscount);
 		
 		JLabel label_cart = new JLabel("\u8ECA\u5EC2");
@@ -139,7 +122,8 @@ public class UITicketPage extends JFrame {
 		JButton btnConfirm = new JButton("\u78BA\u8A8D\u8A02\u7968");
 		btnConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String message = "userID: " + uid + "\nordernumber: wait for controller" + "\n欲查詢車票詳細資訊，請至訂單查詢頁面。";
+				Order order = ControlManager.bookTicket(train, uid, startStn, endStn, cartType, seatPrefer, ticketTypes);
+				String message = "使用者ID: " + uid + "\n訂單代號: " + order.getOrderNumber() + "\n欲查詢車票詳細資訊，請至訂單查詢頁面。";
 				JOptionPane.showMessageDialog(null, message, "已成功訂票！", JOptionPane.INFORMATION_MESSAGE);
 				dispose();
 			}

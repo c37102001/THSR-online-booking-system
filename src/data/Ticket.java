@@ -69,7 +69,7 @@ public class Ticket {
 		return seatNum;
 	}
 
-	public int getTicketType() {
+	public int getCartType() {
 		return cartType;
 	}
 

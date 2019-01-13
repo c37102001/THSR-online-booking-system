@@ -1,29 +1,33 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
+
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import control.CheckTimetableController;
+import data.Station;
 import data.Train;
-import dbconnector.QueryTest;
+import dbconnector.Query;
 
 public class UITimetablePage extends JFrame {
 
 	private JPanel contentPane;
 	private JTable table;
+	private JTable table_2;
 
 	/**
 	 * Launch the application.
@@ -47,10 +51,8 @@ public class UITimetablePage extends JFrame {
 	 */
 	public UITimetablePage(String date) {
 		
-		System.out.println("Timetable page!");
-		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(350, 100, 592, 592);
+		setBounds(350, 100, 592, 618);
 		setResizable(false);
 
 		contentPane = new JPanel();
@@ -75,12 +77,12 @@ public class UITimetablePage extends JFrame {
 		showDate.setText(date);
 		contentPane.add(showDate);
 		
-		JLabel label_1 = new JLabel("\u5317\u4E0A");
-		label_1.setBounds(10, 95, 60, 21);
-		contentPane.add(label_1);
+		JLabel label_headSouth = new JLabel("\u5357\u4E0B");
+		label_headSouth.setBounds(10, 95, 60, 21);
+		contentPane.add(label_headSouth);
 		
 		// list train 
-		CheckTimetableController timeWatcher = new CheckTimetableController(new QueryTest());
+		CheckTimetableController timeWatcher = new CheckTimetableController(new Query());
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 122, 566, 200);
@@ -107,29 +109,66 @@ public class UITimetablePage extends JFrame {
 			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
 		}
 		
-		Train[] trainList = timeWatcher.checkTimetable(date);
-		for (int i = 0; i < trainList.length; i++){
-			Train train = trainList[i];
-			String Nangang = train.getTimetable("南港");
-			String Taipei = train.getTimetable("台北");
-			String Banqiao = train.getTimetable("板橋");
-			String Taoyuan = train.getTimetable("桃園");
-			String HsinChu = train.getTimetable("新竹");
-			String Miaoli = train.getTimetable("苗栗");
-			String Taichung = train.getTimetable("台中");
-			String Changhua = train.getTimetable("彰化");
-			String Yunlin = train.getTimetable("雲林");
-			String Chiayi = train.getTimetable("嘉義");
-			String Tainan = train.getTimetable("台南");
-			String Zuoying = train.getTimetable("左營");
-			
-			Object row[] = {train.getTid(), Nangang, Taipei, Banqiao, Taoyuan, HsinChu, Miaoli, Taichung, Changhua, Yunlin, Chiayi, Tainan, Zuoying};
+		Train[] trainList = timeWatcher.checkTimetable(date, 0);
+		for(Train train : trainList) {
+			List<String> trainTime = new ArrayList<String>();
+			trainTime.add(train.getTid());
+			for(String station : Station.CHI_NAME) {
+				String time = train.getTimetable(station)==null ? " - " : train.getTimetable(station).substring(0, 5);
+				trainTime.add(time);
+			}
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			model.addRow(row);
+			model.addRow(trainTime.toArray());
 		}
 		
 		table.setRowHeight(30);
 		scrollPane.setViewportView(table);
+		
+		//---------------------------------------
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 363, 566, 200);
+		contentPane.add(scrollPane_1);
+		
+		table_2 = new JTable();
+		table_2.setRowSelectionAllowed(false);
+		table_2.setModel(new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"\u8ECA\u6B21", "\u5357\u6E2F", "\u53F0\u5317", "\u677F\u6A4B", "\u6843\u5712", "\u65B0\u7AF9", "\u82D7\u6817", "\u53F0\u4E2D", "\u5F70\u5316", "\u96F2\u6797", "\u5609\u7FA9", "\u53F0\u5357", "\u5DE6\u71DF"
+				}
+			){
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			});
+		DefaultTableCellRenderer centerRenderer2 = new DefaultTableCellRenderer();
+		centerRenderer2.setHorizontalAlignment(JLabel.CENTER);
+		int count2 = table_2.getColumnCount();
+		for (int i = 0; i < count2; i++) {
+			table_2.getColumnModel().getColumn(i).setCellRenderer(centerRenderer2);
+		}
+		
+		Train[] trainList2 = timeWatcher.checkTimetable(date, 1);
+		for(Train train : trainList2) {
+			List<String> trainTime = new ArrayList<String>();
+			trainTime.add(train.getTid());
+			for(String station : (Station.CHI_NAME)) {
+				String time = train.getTimetable(station)==null ? " - " : train.getTimetable(station).substring(0, 5);
+				trainTime.add(time);
+			}
+			DefaultTableModel model = (DefaultTableModel) table_2.getModel();
+			model.addRow(trainTime.toArray());
+		}
+		
+		table_2.setRowHeight(30);
+		scrollPane_1.setViewportView(table_2);
+		
+		JLabel label = new JLabel("\u5317\u4E0A");
+		label.setBounds(10, 337, 60, 21);
+		contentPane.add(label);
+		
 		
 		
 	}

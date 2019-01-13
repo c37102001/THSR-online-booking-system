@@ -8,7 +8,7 @@ public class CheckTimetableController {
 
 	private QueryInterface query;
 	
-	CheckTimetableController(QueryInterface query){
+	public CheckTimetableController(QueryInterface query){
 		this.query = query;
 	}
 	
