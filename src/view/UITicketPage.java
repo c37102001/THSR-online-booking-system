@@ -16,9 +16,15 @@ import javax.swing.table.DefaultTableModel;
 
 import data.Ticket;
 import data.Train;
+import dbconnector.QueryTest;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
+import javax.swing.SwingConstants;
+
+import service.TrainService;
+import control.SearchTrainController;
 
 public class UITicketPage extends JFrame {
 
@@ -48,6 +54,9 @@ public class UITicketPage extends JFrame {
 		String tid = train.getTid();
 		String startTime = train.getTimetable(startStn);
 		String endTime = train.getTimetable(endStn);
+		
+		SearchTrainController searchMan = new SearchTrainController(
+				new QueryTest(), new TrainService());
 		
 		System.out.println("uid: " + uid);
 		System.out.println("date: " + date);
@@ -137,6 +146,102 @@ public class UITicketPage extends JFrame {
 		});
 		btnConfirm.setBounds(10, 513, 334, 40);
 		contentPane.add(btnConfirm);
+		
+		JLabel label_adult = new JLabel("\u5168\u7968");
+		label_adult.setBounds(30, 250, 60, 21);
+		contentPane.add(label_adult);
+		
+		JLabel showAdult = new JLabel("\u5168\u7968");
+		showAdult.setBounds(90, 250, 40, 21);
+		showAdult.setText(String.valueOf(ticketTypes[0]));
+		contentPane.add(showAdult);
+		
+		JLabel label_1 = new JLabel("\u5F35");
+		label_1.setBounds(130, 250, 30, 21);
+		contentPane.add(label_1);
+		
+		JLabel label_kid = new JLabel("\u5B69\u7AE5");
+		label_kid.setBounds(30, 290, 60, 21);
+		contentPane.add(label_kid);
+		
+		JLabel showKid = new JLabel("\u5168\u7968");
+		showKid.setBounds(90, 290, 40, 21);
+		showKid.setText(String.valueOf(ticketTypes[1]));
+		contentPane.add(showKid);
+		
+		JLabel label_2 = new JLabel("\u5F35");
+		label_2.setBounds(130, 290, 30, 21);
+		contentPane.add(label_2);
+		
+		JLabel label_old = new JLabel("\u656C\u8001");
+		label_old.setBounds(30, 330, 60, 21);
+		contentPane.add(label_old);
+		
+		JLabel showOld = new JLabel("\u5168\u7968");
+		showOld.setBounds(90, 330, 40, 21);
+		showOld.setText(String.valueOf(ticketTypes[2]));
+		contentPane.add(showOld);
+		
+		JLabel label_3 = new JLabel("\u5F35");
+		label_3.setBounds(130, 330, 30, 21);
+		contentPane.add(label_3);
+		
+		JLabel label_prior = new JLabel("\u611B\u5FC3");
+		label_prior.setBounds(30, 370, 60, 21);
+		contentPane.add(label_prior);
+		
+		JLabel showPrior = new JLabel("\u5168\u7968");
+		showPrior.setBounds(90, 370, 40, 21);
+		showPrior.setText(String.valueOf(ticketTypes[3]));
+		contentPane.add(showPrior);
+		
+		JLabel label_4 = new JLabel("\u5F35");
+		label_4.setBounds(130, 370, 30, 21);
+		contentPane.add(label_4);
+		
+		JLabel label_student = new JLabel("\u5927\u5B78\u751F");
+		label_student.setBounds(30, 410, 60, 21);
+		contentPane.add(label_student);
+		
+		JLabel showStudent = new JLabel("\u5168\u7968");
+		showStudent.setBounds(90, 410, 40, 21);
+		showStudent.setText(String.valueOf(ticketTypes[4]));
+		contentPane.add(showStudent);
+		
+		JLabel label_5 = new JLabel("\u5F35");
+		label_5.setBounds(130, 410, 30, 21);
+		contentPane.add(label_5);
+		
+		JLabel label_total = new JLabel("\u5171");
+		label_total.setBounds(200, 410, 40, 21);
+		contentPane.add(label_total);
+		
+		int sum = 0;
+		for (int i = 0; i < ticketTypes.length; i++){
+			sum += ticketTypes[i];
+		}
+		JLabel showTotal = new JLabel("\u5168\u7968");
+		showTotal.setBounds(240, 410, 40, 21);
+		showTotal.setText(String.valueOf(sum));
+		contentPane.add(showTotal);
+		
+		JLabel label_6 = new JLabel("\u5F35");
+		label_6.setBounds(280, 410, 30, 21);
+		contentPane.add(label_6);
+		
+		JLabel label_price = new JLabel("\u7E3D\u50F9");
+		label_price.setBounds(200, 450, 40, 21);
+		contentPane.add(label_price);
+		
+		int price = searchMan.getTotalPrice(train, startStn, endStn, cartType, ticketTypes);
+		JLabel showPrice = new JLabel("\u5168\u7968");
+		showPrice.setBounds(240, 450, 40, 21);
+		showPrice.setText(String.valueOf(price));
+		contentPane.add(showPrice);
+		
+		JLabel label_8 = new JLabel("\u5143");
+		label_8.setBounds(280, 450, 30, 21);
+		contentPane.add(label_8);
 		
 	}
 }
