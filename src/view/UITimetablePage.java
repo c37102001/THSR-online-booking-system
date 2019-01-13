@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,8 +16,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import control.CheckTimetableController;
 import data.Station;
@@ -136,7 +135,7 @@ public class UITimetablePage extends JFrame {
 				new Object[][] {
 				},
 				new String[] {
-					"\u8ECA\u6B21", "\u5357\u6E2F", "\u53F0\u5317", "\u677F\u6A4B", "\u6843\u5712", "\u65B0\u7AF9", "\u82D7\u6817", "\u53F0\u4E2D", "\u5F70\u5316", "\u96F2\u6797", "\u5609\u7FA9", "\u53F0\u5357", "\u5DE6\u71DF"
+					"\u8ECA\u6B21", "\u5DE6\u71DF", "\u53F0\u5357", "\u5609\u7FA9", "\u96F2\u6797", "\u5F70\u5316",  "\u53F0\u4E2D", "\u82D7\u6817","\u65B0\u7AF9","\u6843\u5712",  "\u677F\u6A4B","\u53F0\u5317",  "\u5357\u6E2F" 
 				}
 			){
 				public boolean isCellEditable(int row, int column) {
@@ -154,7 +153,8 @@ public class UITimetablePage extends JFrame {
 		for(Train train : trainList2) {
 			List<String> trainTime = new ArrayList<String>();
 			trainTime.add(train.getTid());
-			for(String station : (Station.CHI_NAME)) {
+			for(int i=Station.CHI_NAME.length-1; i>=0; i--) {
+				String station = Station.CHI_NAME[i];
 				String time = train.getTimetable(station)==null ? " - " : train.getTimetable(station).substring(0, 5);
 				trainTime.add(time);
 			}
