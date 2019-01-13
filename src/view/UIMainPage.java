@@ -34,7 +34,9 @@ import java.awt.Color;
 
 import com.toedter.calendar.JDateChooser;
 
+import control.CheckOrderController;
 import control.SearchTrainController;
+import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.QueryTest;
@@ -62,7 +64,7 @@ public class UIMainPage extends JFrame {
 	private ItemHandler boxItem = new ItemHandler();
 	
 	// variables that need to be passed to UIOrderPage;
-	private String uid, startStn, endStn, date, time;
+	private String uid, startStn, endStn, date, time, orderNum;
 	private int cartType, seatPrefer, adultNum, elderNum, studentNum, kidNum, priorNum;
 			
 	/**
@@ -379,11 +381,26 @@ public class UIMainPage extends JFrame {
 		JButton searchOrderBtn = new JButton("\u67E5\u8A62\u8A02\u55AE");
 		searchOrderBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (uid_order.getText().equals("") || orderNumber.getText().equals("")) {
+				
+				uid = uid_order.getText();
+				orderNum = orderNumber.getText();
+				
+				if (uid.equals("") || orderNum.equals("")) {
 					JOptionPane.showMessageDialog(null, "使用者ID與訂單編號不可為空，請重新輸入。", "輸入錯誤！", JOptionPane.INFORMATION_MESSAGE);
 				}
 				else {
-					System.out.println("go to search order page!");
+					CheckOrderController checkTicket = new CheckOrderController(new QueryTest());
+					Order order = checkTicket.checkOrder(uid, orderNum);
+					
+					if (order.getTicketList().size() == 0){
+						JOptionPane.showMessageDialog(null, "查無訂單，請重新查詢。", "查詢無結果！", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						order.showTicketDetails();
+						System.out.println("tickets in the order: " + order.getTicketList().size());
+						UIShowOrderPage showOrderpage = new UIShowOrderPage(uid, orderNum, order);
+						showOrderpage.setVisible(true);
+					}
 				}
 			}
 		});

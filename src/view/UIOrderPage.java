@@ -32,7 +32,7 @@ import service.TrainService;
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
-	private String tid, startTime, endTime;
+	private String tid, startTime, endTime, discount;
 	private Train train;
 
 	/**
@@ -82,7 +82,7 @@ public class UIOrderPage extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 				//UITicketPage ticketpage = new UITicketPage(uid, date, tid, startStn, startTime, endStn, endTime, ticketTypes);
-				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, ticketTypes);
+				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, seatPrefer, ticketTypes, discount);
 				ticketpage.setVisible(true);
 			}
 		});
@@ -134,8 +134,6 @@ public class UIOrderPage extends JFrame {
 		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
 				cartType, ticketTypes);
-		
-		Train[] trainTest = {};
 		*/
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];

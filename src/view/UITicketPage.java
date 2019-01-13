@@ -49,7 +49,7 @@ public class UITicketPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int[] ticketTypes) {
+	public UITicketPage(String uid, String date, String startStn, String endStn, Train train, int cartType, int seatPrefer, int[] ticketTypes, String discount) {
 		
 		String tid = train.getTid();
 		String startTime = train.getTimetable(startStn);
@@ -122,6 +122,7 @@ public class UITicketPage extends JFrame {
 		
 		JLabel showDiscount = new JLabel("New label");
 		showDiscount.setBounds(240, 170, 85, 21);
+		showDiscount.setText(discount);
 		contentPane.add(showDiscount);
 		
 		JLabel label_cart = new JLabel("\u8ECA\u5EC2");
