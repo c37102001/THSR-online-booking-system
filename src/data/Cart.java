@@ -82,7 +82,7 @@ public class Cart {
     public int getTotalSeatNum() {
     	int totalNum = 0;
     	for(Seat seat : seatList) {
-    		if(seat.getAvailableStatus() == true && seat.getAvailableStatus() == true) totalNum++ ;
+    		if(seat.getAvailableStatus() == true) totalNum++ ;
     	}
     	return totalNum;
     }

@@ -7,7 +7,7 @@ public interface QueryInterface {
 	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType, int ticketQty);
 
 	// {"0104E", "0312A", "0601B" , ... } 
-	public String[] getUnavailableSeatList(Train train);	//tid, date
+	public String[] getUnavailableSeatList(Train train);
 
 	public void addTicket(String orderNumber, String uid, Ticket ticket);
 
@@ -19,6 +19,6 @@ public interface QueryInterface {
 
 	public void deleteTicket(Ticket ticket);
 
-	public Train[] checkTimetable(String date);
+	public Train[] checkTimetable(String date, int direction);
 	
 }

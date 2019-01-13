@@ -3,7 +3,7 @@ package control;
 import data.Order;
 import data.Ticket;
 import dbconnector.QueryInterface;
-import dbconnector.QueryTest;
+import dbconnector.Query;
 
 public class CheckOrderController {
 	private QueryInterface query;
@@ -30,18 +30,17 @@ public class CheckOrderController {
 	}
 
 	public static void main(String[] args) {
-		CheckOrderController checkBro = new CheckOrderController(new QueryTest());
+		CheckOrderController checkBro = new CheckOrderController(new Query());
 		
-		String uid = "c37102001";
-		String orderNumber = "3112571216";
+		String uid = "c";
+		String orderNumber = "1508675386";
 		
 		Order myOrder = checkBro.checkOrder(uid, orderNumber);
 		myOrder.showTicketDetails();
-//		
-//		Ticket[] selectedTickets = {myOrder.getTicketList().get(0)};
-//		myOrder = checkBro.deleteTicket(myOrder, selectedTickets);
-//		System.out.println();
-//		myOrder.showTicketDetails();
 		
+		Ticket[] selectedTickets = {myOrder.getTicketList().get(0)};
+		myOrder = checkBro.deleteTicket(myOrder, selectedTickets);
+		System.out.println();
+		myOrder.showTicketDetails();
 	}
 }

@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -21,17 +20,18 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import control.BookTicketController;
+import control.ControlManager;
 import control.SearchTrainController;
-import data.Order;
-import data.Ticket;
 import data.Train;
-import dbconnector.QueryTest;
+import dbconnector.Query;
+import discount.EarlyBird;
 import service.TrainService;
 
 public class UIOrderPage extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
+	private String tid, startTime, endTime;
+	private Train train;
 
 	/**
 	 * @wbp.nonvisual location=104,239
@@ -48,9 +48,10 @@ public class UIOrderPage extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UIOrderPage(String uid, String startStn, String endStn, String date,
-			String time, int cartType, int seatPrefer, int[] ticketTypes) {
 
+	public UIOrderPage(String uid, String startStn, String endStn, String date,
+			String time, int cartType, int seatPrefer, int[] ticketTypes, Train[] trainList) {
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 360, 592);
 		setResizable(false);
@@ -61,10 +62,10 @@ public class UIOrderPage extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel lblNewLabel_5 = new JLabel("");
-		lblNewLabel_5.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
-		lblNewLabel_5.setBounds(-5, 0, 249, 85);
-		contentPane.add(lblNewLabel_5);
+		JLabel icon = new JLabel("");
+		icon.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
+		icon.setBounds(-5, 0, 249, 85);
+		contentPane.add(icon);
 
 		JButton btnCancel = new JButton("\u53D6\u6D88\u8A02\u7968");
 		btnCancel.addActionListener(new ActionListener() {
@@ -72,19 +73,19 @@ public class UIOrderPage extends JFrame {
 				dispose();
 			}
 		});
-		btnCancel.setBounds(10, 506, 157, 37);
+		btnCancel.setBounds(10, 513, 163, 40);
 		contentPane.add(btnCancel);
 
 		JButton btnOrder = new JButton("\u78BA\u8A8D\u8A02\u7968");
 		btnOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				UITicketPage ticketpage = new UITicketPage();
+				UITicketPage ticketpage = new UITicketPage(uid, date, startStn, endStn, train, cartType, seatPrefer, ticketTypes);
 				ticketpage.setVisible(true);
 			}
 		});
 		btnOrder.setEnabled(false);
-		btnOrder.setBounds(177, 506, 157, 37);
+		btnOrder.setBounds(181, 513, 163, 40);
 		contentPane.add(btnOrder);
 
 		JLabel label = new JLabel("\u9078\u64C7\u65E5\u671F");
@@ -96,48 +97,21 @@ public class UIOrderPage extends JFrame {
 		label_date.setText(date);
 		contentPane.add(label_date);
 
-		JLabel label_tid = new JLabel("\u8ECA\u6B21");
-		label_tid.setHorizontalAlignment(SwingConstants.CENTER);
-		label_tid.setBounds(30, 130, 60, 21);
-		contentPane.add(label_tid);
-
-		JLabel label_start = new JLabel("\u8D77\u7AD9");
-		label_start.setHorizontalAlignment(SwingConstants.CENTER);
-		label_start.setBounds(90, 130, 60, 21);
-		label_start.setText(startStn);
-		contentPane.add(label_start);
-
-		JLabel label_1 = new JLabel("\u2192");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setBounds(150, 130, 40, 21);
-		contentPane.add(label_1);
-
-		JLabel label_end = new JLabel("\u8FC4\u7AD9");
-		label_end.setHorizontalAlignment(SwingConstants.CENTER);
-		label_end.setBounds(190, 130, 60, 21);
-		label_end.setText(endStn);
-		contentPane.add(label_end);
-
-		JLabel label_driveTime = new JLabel("\u884C\u8ECA\u6642\u9593");
-		label_driveTime.setHorizontalAlignment(SwingConstants.CENTER);
-		label_driveTime.setBounds(250, 130, 60, 21);
-		contentPane.add(label_driveTime);
-
 		JScrollPane scrollPane = new JScrollPane();
+
 		scrollPane
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(25, 161, 309, 335);
+		scrollPane.setBounds(20, 130, 324, 373);
 		contentPane.add(scrollPane);
 		
-		TableModel tmodel = new DefaultTableModel(new Object[][] {},
-				new String[] { "車次", startStn, "→", endStn, "行車時間" }) {
+		
+		TableModel tmodel = new DefaultTableModel(new Object[][] {}, new String[] { "車次", startStn, "→", endStn, "行車時間" }) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
 		table = new JTable();
 		table.setShowGrid(false);
-
 		table.setModel(tmodel);
 		
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -149,62 +123,56 @@ public class UIOrderPage extends JFrame {
 		}
 		table.setRowSelectionAllowed(true);
 		table.setRowHeight(30);
+		table.getColumnModel().getColumn(2).setPreferredWidth(30);
 		
 		// get available train list
-		SearchTrainController searchMan = new SearchTrainController(
-				new QueryTest(), new TrainService());
+		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+		
+		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
 				cartType, ticketTypes);
-
+		*/
 		for (int i = 0; i < trainList.length; i++) {
 			Train train = trainList[i];
 			String TID = train.getTid();
-			String startTime = train.getTimetable(startStn);
+			String StartTime = train.getTimetable(startStn);
 			String arror = "→";
 			String arriveTime = train.getTimetable(endStn);
-			String drivingTime = searchMan.totalTimeCulculator(train, startStn,
-					endStn);
 
-			Object[] row = { TID, startTime, arror, arriveTime, drivingTime };
+			String drivingTime = searchMan.getTotalTime(train, startStn,
+					endStn);
+			
+			Object[] row = { TID, StartTime, arror, arriveTime, drivingTime };
 
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			model.addRow(row);
-		}
-		
-		/*
-		 * // when you manage to let user choose a train, just replace
-		 * "trainList[0]" in bookticket() with the selected one, // and it's
-		 * supposed to return the order/ticket details.
-		 * 
-		 * BookTicketController bookingHelper = new BookTicketController(new
-		 * QueryTest(), new TrainService()); Order myorder =
-		 * bookingHelper.bookTicket(trainList[0], uid, startStn, endStn,
-		 * cartType, seatPrefer, ticketTypes);
-		 * 
-		 * for(Ticket ticket : myorder.getTicketList()) {
-		 * System.out.println("車票代號: " + ticket.getTicketNumber());
-		 * System.out.println("車次: " + ticket.getTid());
-		 * System.out.println("日期: " + ticket.getDate());
-		 * System.out.println("起站: " + ticket.getStart() + "(" +
-		 * ticket.getStime() + ")"); System.out.println("迄站: " + ticket.getEnd()
-		 * + "(" + ticket.getEtime()+ ")"); System.out.println("座位號碼: " +
-		 * ticket.getSeatNum()); System.out.println("票種: " +
-		 * ticket.getDiscountType().getName()); System.out.println("價格: " +
-		 * ticket.getPrice()); System.out.println(); }
-		 * System.out.println("訂單總額:" + myorder.getTotalPrice()); } });
-		 * getTrainBtn.setBounds(250, 70, 0, 0); getTrainBtn.doClick();
-		 * contentPane.add(getTrainBtn);
-		 */
-		
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				btnOrder.setEnabled(true);
-			}
+			String earlyBird = "";
+			String student="";
+			if(ticketTypes[0]!=0 && !ControlManager.checkEarlyBird(train, ticketTypes[0]).equals("")) 
+				earlyBird = searchMan.checkEarlyBird(train, cartType);
+			if (ticketTypes[4] != 0 && !ControlManager.checkStudent(train, ticketTypes[4]).equals("")) 
+				student = searchMan.checkStudent(train, cartType);
 			
-		});
+			if(!earlyBird.equals(""))
+				model.addRow(new Object[] { "適用優惠", earlyBird, "", student});
+			else if(!student.equals("")) 
+				model.addRow(new Object[] { "適用優惠", student});
+			else 
+				model.addRow(new Object[] { "適用優惠", "無"});
+		}
+
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()){
+							train = trainList[table.getSelectedRow()/2];
+							btnOrder.setEnabled(true);
+						}
+						
+					}
+				});
 		scrollPane.setViewportView(table);
 	}
 }

@@ -1,50 +1,45 @@
 package view;
 
+import java.awt.Color;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.SwingConstants;
-
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import other.GroupSpinner;
-
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
-import javax.swing.JSpinner;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-
-import java.awt.Color;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.toedter.calendar.JDateChooser;
 
+import control.CheckOrderController;
+import control.SearchTrainController;
+import data.Order;
 import data.Ticket;
-
-import javax.swing.SpinnerDateModel;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+import data.Train;
+import dbconnector.Query;
+import other.GroupSpinner;
+import service.TrainService;
 
 public class UIMainPage extends JFrame {
 	
@@ -60,7 +55,7 @@ public class UIMainPage extends JFrame {
 	private ItemHandler boxItem = new ItemHandler();
 	
 	// variables that need to be passed to UIOrderPage;
-	private String uid, startStn, endStn, date, time;
+	private String uid, startStn, endStn, date, time, orderNum;
 	private int cartType, seatPrefer, adultNum, elderNum, studentNum, kidNum, priorNum;
 			
 	/**
@@ -97,10 +92,10 @@ public class UIMainPage extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel_5 = new JLabel("");
-		lblNewLabel_5.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
-		lblNewLabel_5.setBounds(-5, 0, 249, 85);
-		contentPane.add(lblNewLabel_5);
+		JLabel icon = new JLabel("");
+		icon.setIcon(new ImageIcon(getClass().getResource("..\\img\\logo.jpg")));
+		icon.setBounds(-5, 0, 249, 85);
+		contentPane.add(icon);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 90, 344, 466);
@@ -110,18 +105,18 @@ public class UIMainPage extends JFrame {
 		tabbedPane.addTab("\u8A02\u7968", null, panel, null);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("\u4F7F\u7528\u8005ID");
-		lblNewLabel.setBounds(30, 30, 60, 21);
-		panel.add(lblNewLabel);
+		JLabel label_uid = new JLabel("\u4F7F\u7528\u8005ID");
+		label_uid.setBounds(30, 30, 60, 21);
+		panel.add(label_uid);
 		
 		userID = new JTextField();
 		userID.setBounds(100, 30, 121, 21);
 		panel.add(userID);
 		userID.setColumns(10);
 		
-		JLabel label = new JLabel("\u8D77\u8A16\u7AD9");
-		label.setBounds(30, 80, 60, 21);
-		panel.add(label);
+		JLabel label_sStn = new JLabel("\u8D77\u8A16\u7AD9");
+		label_sStn.setBounds(30, 80, 60, 21);
+		panel.add(label_sStn);
 		
 		//JComboBox<String> startStation = new JComboBox<String>();
 		startStation.setModel(new DefaultComboBoxModel<String>(new String[] {"\u5357\u6E2F", "\u53F0\u5317", "\u677F\u6A4B", "\u6843\u5712", "\u65B0\u7AF9", "\u82D7\u6817", "\u53F0\u4E2D", "\u5F70\u5316", "\u96F2\u6797", "\u5609\u7FA9", "\u53F0\u5357", "\u5DE6\u71DF"}));
@@ -131,10 +126,10 @@ public class UIMainPage extends JFrame {
 		startStation.addItemListener(boxItem);
 		panel.add(startStation);
 		
-		JLabel label_1 = new JLabel("\u81F3");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setBounds(160, 80, 61, 21);
-		panel.add(label_1);
+		JLabel label_to = new JLabel("\u81F3");
+		label_to.setHorizontalAlignment(SwingConstants.CENTER);
+		label_to.setBounds(160, 80, 61, 21);
+		panel.add(label_to);
 		
 		//JComboBox<String> endStation = new JComboBox<String>();
 		endStation.setModel(new DefaultComboBoxModel<String>(new String[] {"\u5357\u6E2F", "\u53F0\u5317", "\u677F\u6A4B", "\u6843\u5712", "\u65B0\u7AF9", "\u82D7\u6817", "\u53F0\u4E2D", "\u5F70\u5316", "\u96F2\u6797", "\u5609\u7FA9", "\u53F0\u5357", "\u5DE6\u71DF"}));
@@ -144,9 +139,9 @@ public class UIMainPage extends JFrame {
 		endStation.addItemListener(boxItem);
 		panel.add(endStation);
 		
-		JLabel lblNewLabel_1 = new JLabel("\u6642\u9593");
-		lblNewLabel_1.setBounds(30, 130, 60, 21);
-		panel.add(lblNewLabel_1);
+		JLabel label_eStn = new JLabel("\u6642\u9593");
+		label_eStn.setBounds(30, 130, 60, 21);
+		panel.add(label_eStn);
 		
 		Date current = new Date();
 		Date max = new Date();
@@ -158,6 +153,7 @@ public class UIMainPage extends JFrame {
 		JDateChooser dateChooser = new JDateChooser();
 		dateChooser.setSelectableDateRange(current, max);
 		dateChooser.setDate(current);
+		dateChooser.setDateFormatString("yyyy-MM-dd");
 		dateChooser.setBounds(100, 130, 121, 21);
 		panel.add(dateChooser);
 		
@@ -168,9 +164,9 @@ public class UIMainPage extends JFrame {
 		timePicker.setBounds(240, 130, 60, 21);
 		panel.add(timePicker);
 		
-		JLabel label_2 = new JLabel("\u8ECA\u5EC2\u7A2E\u985E");
-		label_2.setBounds(30, 180, 60, 21);
-		panel.add(label_2);
+		JLabel label_cart = new JLabel("\u8ECA\u5EC2\u7A2E\u985E");
+		label_cart.setBounds(30, 180, 60, 21);
+		panel.add(label_cart);
 		
 		JRadioButton stdCart = new JRadioButton("\u6A19\u6E96");
 		stdCart.setSelected(true);
@@ -296,41 +292,55 @@ public class UIMainPage extends JFrame {
 		JButton searchCandidateBtn = new JButton("\u8ECA\u6B21\u67E5\u8A62");
 		searchCandidateBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				uid = userID.getText();
-				startStn = startStation.getSelectedItem().toString();
-				endStn = endStation.getSelectedItem().toString();
-				DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd");
-				date = dateformat.format(dateChooser.getDate());
-				DateFormat timeformat = new SimpleDateFormat("HH:mm");
-				time = timeformat.format(timePicker.getValue());
 
-				if (stdCart.isSelected()) {
-					cartType = Ticket.CartStandard;
-				} else {
-					cartType = Ticket.CartBusiness;
+				if (userID.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "使用者ID不可為空，請重新輸入。", "使用者ID輸入錯誤！", JOptionPane.INFORMATION_MESSAGE);
 				}
+				else {
+					uid = userID.getText();
+					startStn = startStation.getSelectedItem().toString();
+					endStn = endStation.getSelectedItem().toString();
+					DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+					date = dateformat.format(dateChooser.getDate());
+					DateFormat timeformat = new SimpleDateFormat("HH:mm");
+					time = timeformat.format(timePicker.getValue());
 
-				if (seatNone.isSelected()) {
-					seatPrefer = Ticket.SeatNoPrefer;
-				} else if (seatAisle.isSelected()) {
-					seatPrefer = Ticket.SeatAisle;
-				} else {
-					seatPrefer = Ticket.SeatWindow;
+					if (stdCart.isSelected()) {
+						cartType = Ticket.CartStandard;
+					} else {
+						cartType = Ticket.CartBusiness;
+					}
+
+					if (seatNone.isSelected()) {
+						seatPrefer = Ticket.SeatNoPrefer;
+					} else if (seatAisle.isSelected()) {
+						seatPrefer = Ticket.SeatAisle;
+					} else {
+						seatPrefer = Ticket.SeatWindow;
+					}
+
+					adultNum = (int)adult.getValue();
+					elderNum = (int)elder.getValue();
+					studentNum = (int)student.getValue();
+					kidNum = (int)kid.getValue();
+					priorNum = (int) prior.getValue();
+					int[] ticketTypes = {adultNum, kidNum, elderNum, priorNum, studentNum};
+					
+					// UIMainPage
+					// get available train list
+					SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+					Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
+
+					if (trainList.length == 0) {
+						JOptionPane.showMessageDialog(null, "您選擇的時段已額滿，或尚未開放銷售，請重新查詢。", "無符合車次！", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						UIOrderPage orderpage = new UIOrderPage(uid, startStn, endStn, date, time, cartType, seatPrefer, ticketTypes, trainList);
+						orderpage.setVisible(true);
+					}
 				}
-
-				adultNum = (int)adult.getValue();
-				elderNum = (int)elder.getValue();
-				studentNum = (int)student.getValue();
-				kidNum = (int)kid.getValue();
-				priorNum = (int) prior.getValue();
-				int[] ticketTypes = {adultNum, kidNum, elderNum, priorNum, studentNum};
-				
-				// UIMainPage
-				UIOrderPage orderpage = new UIOrderPage(uid, startStn, endStn, date, time, cartType, seatPrefer, ticketTypes);
-				orderpage.setVisible(true);
 			}
 		});
-		searchCandidateBtn.setBounds(10, 390, 319, 35);
+		searchCandidateBtn.setBounds(10, 387, 319, 40);
 		panel.add(searchCandidateBtn);
 		
 		/*
@@ -340,18 +350,18 @@ public class UIMainPage extends JFrame {
 		tabbedPane.addTab("\u8A02\u55AE\u67E5\u8A62", null, panel_1, null);
 		panel_1.setLayout(null);
 		
-		JLabel lblid = new JLabel("\u4F7F\u7528\u8005ID");
-		lblid.setBounds(30, 30, 60, 21);
-		panel_1.add(lblid);
+		JLabel label_uid2 = new JLabel("\u4F7F\u7528\u8005ID");
+		label_uid2.setBounds(30, 30, 60, 21);
+		panel_1.add(label_uid2);
 		
 		uid_order = new JTextField();
 		uid_order.setBounds(100, 30, 121, 21);
 		panel_1.add(uid_order);
 		uid_order.setColumns(10);
 		
-		JLabel label_3 = new JLabel("\u8A02\u55AE\u7DE8\u865F");
-		label_3.setBounds(30, 80, 60, 21);
-		panel_1.add(label_3);
+		JLabel label_orderNum = new JLabel("\u8A02\u55AE\u7DE8\u865F");
+		label_orderNum.setBounds(30, 80, 60, 21);
+		panel_1.add(label_orderNum);
 		
 		orderNumber = new JTextField();
 		orderNumber.setBounds(100, 80, 121, 21);
@@ -359,7 +369,32 @@ public class UIMainPage extends JFrame {
 		orderNumber.setColumns(10);
 		
 		JButton searchOrderBtn = new JButton("\u67E5\u8A62\u8A02\u55AE");
-		searchOrderBtn.setBounds(10, 390, 319, 35);
+		searchOrderBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				uid = uid_order.getText();
+				orderNum = orderNumber.getText();
+				
+				if (uid.equals("") || orderNum.equals("")) {
+					JOptionPane.showMessageDialog(null, "使用者ID與訂單編號不可為空，請重新輸入。", "輸入錯誤！", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					CheckOrderController checkTicket = new CheckOrderController(new Query());
+					Order order = checkTicket.checkOrder(uid, orderNum);
+					
+					if (order.getTicketList().size() == 0){
+						JOptionPane.showMessageDialog(null, "查無訂單，請重新查詢。", "查詢無結果！", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+//						order.showTicketDetails();
+//						System.out.println("tickets in the order: " + order.getTicketList().size());
+						UIShowOrderPage showOrderpage = new UIShowOrderPage(uid, orderNum, order);
+						showOrderpage.setVisible(true);
+					}
+				}
+			}
+		});
+		searchOrderBtn.setBounds(10, 385, 319, 40);
 		panel_1.add(searchOrderBtn);
 		
 		/*
@@ -369,17 +404,30 @@ public class UIMainPage extends JFrame {
 		tabbedPane.addTab("\u9AD8\u9435\u6642\u523B\u8868", null, panel_2, null);
 		panel_2.setLayout(null);
 		
-		JLabel lblNewLabel_3 = new JLabel("\u9078\u64C7\u65E5\u671F");
-		lblNewLabel_3.setBounds(30, 30, 60, 21);
-		panel_2.add(lblNewLabel_3);
-		
-		JButton showTimetableBtn = new JButton("\u67E5\u8A62");
-		showTimetableBtn.setBounds(10, 390, 319, 35);
-		panel_2.add(showTimetableBtn);
+		JLabel label_searchDate = new JLabel("\u9078\u64C7\u65E5\u671F");
+		label_searchDate.setBounds(30, 30, 60, 21);
+		panel_2.add(label_searchDate);
 		
 		JDateChooser dateChooser_1 = new JDateChooser();
 		dateChooser_1.setBounds(100, 30, 121, 21);
+		dateChooser_1.setSelectableDateRange(current, max);
+		dateChooser_1.setDate(current);
+		dateChooser_1.setDateFormatString("yyyy-MM-dd");
 		panel_2.add(dateChooser_1);
+		
+		// when the btn onclick, go to UITimetablePage
+		JButton showTimetableBtn = new JButton("\u67E5\u8A62");
+		showTimetableBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+				date = dateformat.format(dateChooser_1.getDate());
+				
+				UITimetablePage timetablepage = new UITimetablePage(date);
+				timetablepage.setVisible(true);
+			}
+		});
+		showTimetableBtn.setBounds(10, 385, 319, 40);
+		panel_2.add(showTimetableBtn);
 	}
 	
 	private class ActionHandler implements ActionListener {

@@ -3,8 +3,8 @@ package control;
 import data.Order;
 import data.Ticket;
 import data.Train;
+import dbconnector.Query;
 import dbconnector.QueryInterface;
-import dbconnector.QueryTest;
 import discount.Children;
 import discount.Discount;
 import discount.EarlyBird;
@@ -25,7 +25,7 @@ public class BookTicketController {
 	
 	public Order bookTicket(Train train, String uid, String start, String end, int cartType, int seatPrefer, int[] ticketTypes) {
 		setupTrainCart(train);
-		Order order = new Order(uid);
+		Order order = new Order(null, uid);
 		
 		int standardT = ticketTypes[0];
 		int childrenT = ticketTypes[1];
@@ -49,16 +49,19 @@ public class BookTicketController {
 	
 	private void setupTrainCart(Train train) {
 		trainService.initCartList(train);
-		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... } 
-		for(String seatNum : unavailableSeatList)
-			trainService.setUnavailableSeat(train, seatNum);
+		String[] unavailableSeatList = query.getUnavailableSeatList(train);  // {"0104E", "0312A", "0601B" , ... }
+		if(unavailableSeatList.length != 0) {
+			for(String seatNum : unavailableSeatList) {
+				trainService.setUnavailableSeat(train, seatNum);
+			}
+		}
 	}
 	
 	private void makeSingleBooking(Train train, Order order, String uid, String start, String end, int cartType, int seatPrefer, Discount discount, int num){
 		
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
-			Ticket ticket = new Ticket(null, train, start, end, cartType, seatNumber, discount);
+			Ticket ticket = new Ticket(null, train.getTid(), train.getDate(), start, end, train.getTimetable(start), train.getTimetable(end), cartType, seatNumber, discount);
 			query.addTicket(order.getOrderNumber(), uid, ticket);
 			order.addTicket(ticket);
 		}
@@ -80,7 +83,7 @@ public class BookTicketController {
 		int[] ticketTypes = {2, 1, 1, 1, 2};
 		
 		
-		BookTicketController bookingHelper = new BookTicketController(new QueryTest(), new TrainService());
+		BookTicketController bookingHelper = new BookTicketController(new Query(), new TrainService());
 		Order myOrder = bookingHelper.bookTicket(trainA, uid, startStation, endStation, cartType, seatPrefer, ticketTypes);
 		
 		myOrder.showTicketDetails();
