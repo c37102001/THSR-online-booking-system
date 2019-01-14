@@ -149,9 +149,9 @@ public class UIOrderPage extends JFrame {
 			String earlyBird = "";
 			String student="";
 			if(ticketTypes[0]!=0 && !ControlManager.checkEarlyBird(train, ticketTypes[0]).equals("")) 
-				earlyBird = searchMan.checkEarlyBird(train, cartType);
+				earlyBird = searchMan.checkEarlyBird(train, ticketTypes[0]);
 			if (ticketTypes[4] != 0 && !ControlManager.checkStudent(train, ticketTypes[4]).equals("")) 
-				student = searchMan.checkStudent(train, cartType);
+				student = searchMan.checkStudent(train, ticketTypes[4]);
 			
 			if(!earlyBird.equals(""))
 				model.addRow(new Object[] { "¾A¥ÎÀu´f", earlyBird, "", student});

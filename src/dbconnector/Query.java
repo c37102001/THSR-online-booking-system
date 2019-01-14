@@ -4,14 +4,26 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import data.Station;
 import data.Ticket;
 import data.Train;
 import dbconnector.config.DBUtils;
-import discount.*;
+import discount.Children;
+import discount.Discount;
+import discount.EarlyBird65;
+import discount.EarlyBird80;
+import discount.EarlyBird90;
+import discount.Elderly;
+import discount.NeedLove;
+import discount.Standard;
+import discount.Student50;
+import discount.Student70;
+import discount.Student85;
 
 public class Query implements QueryInterface {
 	private Connection conn;
@@ -88,7 +100,7 @@ public class Query implements QueryInterface {
 	public void addTicket(String orderNumber, String uid, Ticket ticket) {
 
 		String sql = "INSERT INTO `thsr`.`tickets` (`tid`, `uid`, `code`, `train_id`, `date`, `start`, `end`,"
-				+ " `start_time`, `end_time`, `type`, `seat`, `price`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ " `start_time`, `end_time`, `type`, `seat`, `price`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			conn = DBUtils.getConnection();
@@ -105,6 +117,7 @@ public class Query implements QueryInterface {
 			ps.setString(10, ticket.getDiscountType().getName());
 			ps.setString(11, ticket.getSeatNum());
 			ps.setInt(12, ticket.getPrice());
+			ps.setString(13, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
 			
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -187,7 +200,7 @@ public class Query implements QueryInterface {
 				String end = rs.getString(5);
 				String stime = rs.getString(6);
 				String etime = rs.getString(7);
-				int cartType = rs.getString(8).substring(0, 2).equals("06") ? Ticket.CartStandard : Ticket.CartBusiness;
+				int cartType = rs.getString(8).substring(0, 2).equals("06") ? Ticket.CartBusiness : Ticket.CartStandard;
 				String seatNum = rs.getString(8);
 				Discount discount = getDiscount(rs.getString(9));
 				//Ticket(String ticketNumber, String tid, String date, String start, String end, String stime, String etime,

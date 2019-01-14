@@ -7,7 +7,7 @@ import discount.*;
 public class Ticket {
 	
 	public static final int CartStandard = 1;
-	public static final int CartBusiness = 2;
+	public static final int CartBusiness = 4;
 	public static final int SeatWindow = 1;
 	public static final int SeatAisle = 2;
 	public static final int SeatNoPrefer = 3;
@@ -33,6 +33,7 @@ public class Ticket {
 		this.startTime = stime;
 		this.endTime = etime;
 		this.seatNum = seatNum;
+		this.cartType = cartType;
 		this.discount = discount;
 		this.price = (int) (Price.getPrice(startStation, endStation, cartType, discount));
 	}
