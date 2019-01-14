@@ -23,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import control.CheckOrderController;
+import control.ControlManager;
 import data.Order;
 import data.Ticket;
 import dbconnector.Query;
@@ -55,7 +56,8 @@ public class UIShowOrderPage extends JFrame {
 	 */
 	public UIShowOrderPage(String uid, String orderNum, Order order) {
 		
-		CheckOrderController deleteTicket = new CheckOrderController(new Query());
+		//CheckOrderController deleteTicket = new CheckOrderController(new Query());
+		
 		ArrayList<Ticket> tickets = order.getTicketList();
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,7 +100,6 @@ public class UIShowOrderPage extends JFrame {
 		table = new JTable();
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-		//MyTableModel model_1 = new MyTableModel();
 		DefaultTableModel model = new DefaultTableModel() {
 		      public Class getColumnClass(int columnIndex) {
 		        return String.class;
@@ -108,9 +109,7 @@ public class UIShowOrderPage extends JFrame {
 			  }
 		};
 		
-		//model.setDataVector(new Object[][] {}, new Object[] { "車票", "刪除" });
 		table.setModel(model);
-		//table.setModel(model_1);
 		
 		int lines = 6;
 	    table.setRowHeight(20 * lines);
@@ -118,7 +117,6 @@ public class UIShowOrderPage extends JFrame {
 	    table.setDefaultRenderer(String.class, new MultiLineCellRenderer());
 	    
 	    List<String> column = new ArrayList<String>();
-	    //List<Boolean> isdelete = new ArrayList<Boolean>();
 	    
 		for (int i = 0; i < tickets.size(); i++){
 			Ticket ticket = tickets.get(i);
@@ -139,14 +137,7 @@ public class UIShowOrderPage extends JFrame {
 			//isdelete.add(false);
 		}
 		
-		//model_1.addColumn("車票", column.toArray());
-		//model_1.addColumn("刪除", isdelete.toArray());
 		model.addColumn("車票", column.toArray());
-		//model.addColumn("刪除", isdelete.toArray());
-		
-		//CheckBoxCellEditor test = new CheckBoxCellEditor();
-		
-		//table.getColumnModel().getColumn(1).setCellEditor(test);
 		table.getColumnModel().getColumn(0).setPreferredWidth(300);
 		scrollPane.setViewportView(table);
 		
@@ -161,7 +152,7 @@ public class UIShowOrderPage extends JFrame {
 					//System.out.println(selected[i]);
 					deleteT.add(tickets.get(i));
 				}
-				deleteTicket.deleteTicket(order, deleteT.toArray(new Ticket[0]));
+				ControlManager.deleteTicket(order, deleteT.toArray(new Ticket[0]));
 				JOptionPane.showMessageDialog(null, "已刪除選擇車票。", "修改訂單完成！", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -200,70 +191,4 @@ public class UIShowOrderPage extends JFrame {
 		    return this;
 		  }
 	}
-	
-	
-	/*
-	 private class CheckBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
-	        protected JCheckBox checkBox;
-	         
-	        public CheckBoxCellEditor() {
-	            checkBox = new JCheckBox();
-	            checkBox.setHorizontalAlignment(SwingConstants.CENTER);
-	            checkBox.setBackground( Color.white);
-	        }
-	         
-	        public Component getTableCellEditorComponent(
-	                JTable table, 
-	                Object value, 
-	                boolean isSelected, 
-	                int row, 
-	                int column) {
-	  
-	            checkBox.setSelected(((Boolean) value).booleanValue());
-	             
-//	            Component c = table.getDefaultRenderer(String.class).getTableCellRendererComponent(table, value, isSelected, false, row, column);
-//	            if (c != null) {
-//	                checkBox.setBackground(c.getBackground());
-//	            }
-	             
-	            return checkBox;
-	        }
-	        public Boolean getCellEditorValue() {
-	            return Boolean.valueOf(checkBox.isSelected());
-	        }
-	    }
-	 
-	 public class MyTableModel extends DefaultTableModel {
-
-		    public MyTableModel() {
-		      super();
-		    }
-
-		    @Override
-		    public Class<?> getColumnClass(int columnIndex) {
-		      Class clazz = String.class;
-		      switch (columnIndex) {
-		        case 1:
-		          clazz = Boolean.class;
-		          break;
-		      }
-		      return clazz;
-		    }
-
-		    @Override
-		    public boolean isCellEditable(int row, int column) {
-		      return column == 1;
-		    }
-
-		    @Override
-		    public void setValueAt(Object aValue, int row, int column) {
-		      if (aValue instanceof Boolean && column == 1) {
-		        //System.out.println(aValue);
-		        Vector rowData = (Vector)getDataVector().get(row);
-		        rowData.set(1, (boolean)aValue);
-		        fireTableCellUpdated(row, column);
-		      }
-		    }
-		  }
-		  */
 }

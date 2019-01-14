@@ -33,13 +33,12 @@ import javax.swing.event.ChangeListener;
 import com.toedter.calendar.JDateChooser;
 
 import control.CheckOrderController;
-import control.SearchTrainController;
+import control.ControlManager;
 import data.Order;
 import data.Ticket;
 import data.Train;
 import dbconnector.Query;
 import other.GroupSpinner;
-import service.TrainService;
 
 public class UIMainPage extends JFrame {
 	
@@ -328,8 +327,8 @@ public class UIMainPage extends JFrame {
 					
 					// UIMainPage
 					// get available train list
-					SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
-					Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
+					//SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+					Train[] trainList = ControlManager.searchTrain(date, startStn, endStn, time, cartType, ticketTypes);
 
 					if (trainList.length == 0) {
 						JOptionPane.showMessageDialog(null, "您選擇的時段已額滿，或尚未開放銷售，請重新查詢。", "無符合車次！", JOptionPane.INFORMATION_MESSAGE);

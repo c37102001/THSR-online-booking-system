@@ -3,6 +3,7 @@ package control;
 import data.Order;
 import data.Ticket;
 import dbconnector.QueryInterface;
+import discount.EarlyBird;
 import dbconnector.Query;
 
 public class CheckOrderController {
@@ -25,6 +26,10 @@ public class CheckOrderController {
 		for(Ticket ticket : tickets) {
 			order.deleteTicket(ticket);
 			query.deleteTicket(ticket);
+			
+			if(ticket.getDiscountType() instanceof EarlyBird) 
+				query.updateEarlyBird(ticket.getTid(), ticket.getDate(), ticket.getDiscountType().getDiscount(), -1);
+			query.updateSeatLeft(ticket.getTid(), ticket.getDate(), ticket.getCartType(), -1);
 		}
 		return order;
 	}

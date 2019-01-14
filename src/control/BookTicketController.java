@@ -61,15 +61,13 @@ public class BookTicketController {
 		
 		for(int i=0; i<num; i++) {
 			String seatNumber = trainService.bookSeat(train, cartType, seatPrefer);
-			System.out.println("cartType:" + cartType);
 			Ticket ticket = new Ticket(null, train.getTid(), train.getDate(), start, end, train.getTimetable(start), train.getTimetable(end), cartType, seatNumber, discount);
-			System.out.println("TicketCartType:" + ticket.getCartType());
 			query.addTicket(order.getOrderNumber(), uid, ticket);
 			order.addTicket(ticket);
 		}
 		if(discount instanceof EarlyBird) 
-			query.updateEarlyBird(train, discount.getDiscount(), num);
-		query.updateSeatLeft(train, cartType, num);
+			query.updateEarlyBird(train.getTid(), train.getDate() , discount.getDiscount(), num);
+		query.updateSeatLeft(train.getTid(), train.getDate(), cartType, num);
 	}
 
 	public static void main(String[] args) {

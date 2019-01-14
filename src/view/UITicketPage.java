@@ -10,16 +10,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import control.ControlManager;
-import control.SearchTrainController;
 import data.Order;
 import data.Ticket;
 import data.Train;
-import dbconnector.Query;
-import service.TrainService;
-import javax.swing.SwingConstants;
 
 public class UITicketPage extends JFrame {
 
@@ -59,7 +56,7 @@ public class UITicketPage extends JFrame {
 			student = ControlManager.checkStudent(train, cartType);
 		String discount = (earlyBird + student).equals("") ? "µL" : earlyBird + "\n" + student;
 		
-		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+		//SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(350, 100, 381, 592);
@@ -227,7 +224,7 @@ public class UITicketPage extends JFrame {
 		label_price.setBounds(200, 450, 40, 21);
 		contentPane.add(label_price);
 		
-		int price = searchMan.getTotalPrice(train, startStn, endStn, cartType, ticketTypes);
+		int price = ControlManager.getTotalPrice(train, startStn, endStn, cartType, ticketTypes);
 		JLabel showPrice = new JLabel("\u5168\u7968");
 		showPrice.setBounds(240, 450, 40, 21);
 		showPrice.setText(String.valueOf(price));

@@ -11,9 +11,9 @@ public interface QueryInterface {
 
 	public void addTicket(String orderNumber, String uid, Ticket ticket);
 
-	public void updateEarlyBird(Train train, double earlyBirdDiscount, int num);
+	public void updateEarlyBird(String tid, String date, double earlyBirdDiscount, int num);
 
-	public void updateSeatLeft(Train train, int cartType, int num);
+	public void updateSeatLeft(String tid, String date, int cartType, int num);
 
 	public Ticket[] getOrderTicket(String uid, String orderNumber);
 

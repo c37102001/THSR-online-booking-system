@@ -126,7 +126,7 @@ public class UIOrderPage extends JFrame {
 		table.getColumnModel().getColumn(2).setPreferredWidth(30);
 		
 		// get available train list
-		SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
+		//SearchTrainController searchMan = new SearchTrainController(new Query(), new TrainService());
 		
 		/*
 		Train[] trainList = searchMan.searchTrain(date, startStn, endStn, time,
@@ -139,8 +139,7 @@ public class UIOrderPage extends JFrame {
 			String arror = "¡÷";
 			String arriveTime = train.getTimetable(endStn);
 
-			String drivingTime = searchMan.getTotalTime(train, startStn,
-					endStn);
+			String drivingTime = ControlManager.getTotalTime(train, startStn, endStn);
 			
 			Object[] row = { TID, StartTime, arror, arriveTime, drivingTime };
 
@@ -149,9 +148,9 @@ public class UIOrderPage extends JFrame {
 			String earlyBird = "";
 			String student="";
 			if(ticketTypes[0]!=0 && !ControlManager.checkEarlyBird(train, ticketTypes[0]).equals("")) 
-				earlyBird = searchMan.checkEarlyBird(train, ticketTypes[0]);
+				earlyBird = ControlManager.checkEarlyBird(train, ticketTypes[0]);
 			if (ticketTypes[4] != 0 && !ControlManager.checkStudent(train, ticketTypes[4]).equals("")) 
-				student = searchMan.checkStudent(train, ticketTypes[4]);
+				student = ControlManager.checkStudent(train, ticketTypes[4]);
 			
 			if(!earlyBird.equals(""))
 				model.addRow(new Object[] { "¾A¥ÎÀu´f", earlyBird, "", student});

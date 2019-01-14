@@ -31,8 +31,7 @@ public class Query implements QueryInterface {
 	private ResultSet rs;
 
 	@Override
-	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType,
-			int ticketQty) {
+	public Train[] searchTrain(String date, String startStation, String endStation, String startTime, int cartType,	int ticketQty) {
 		startStation = Station.getEngName(startStation);
 		endStation = Station.getEngName(endStation);
 		String cartCode = (cartType == Ticket.CartStandard) ? "std_left" : "bus_left";
@@ -128,7 +127,7 @@ public class Query implements QueryInterface {
 	}
 
 	@Override
-	public void updateEarlyBird(Train train, double earlyBirdDiscount, int num) {
+	public void updateEarlyBird(String tid, String date, double earlyBirdDiscount, int num) {
 		String earlyCode="";
 
 		switch (Double.toString(earlyBirdDiscount)) {
@@ -148,8 +147,8 @@ public class Query implements QueryInterface {
 		try {
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);
-			ps.setString(1, train.getTid());
-			ps.setString(2, train.getDate());
+			ps.setString(1, tid);
+			ps.setString(2, date);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -159,7 +158,7 @@ public class Query implements QueryInterface {
 	}
 
 	@Override
-	public void updateSeatLeft(Train train, int cartType, int num) {
+	public void updateSeatLeft(String tid, String date, int cartType, int num) {
 		
 		String seatType = (cartType == Ticket.CartStandard) ? ("std_left = std_left - " + num) : ("bus_left = bus_left - " + num);
 		
@@ -168,8 +167,8 @@ public class Query implements QueryInterface {
 		try {
 			conn = DBUtils.getConnection();
 			ps = conn.prepareStatement(sql);
-			ps.setString(1, train.getTid());
-			ps.setString(2, train.getDate());
+			ps.setString(1, tid);
+			ps.setString(2, date);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

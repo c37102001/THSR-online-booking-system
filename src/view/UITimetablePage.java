@@ -2,8 +2,6 @@ package view;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -17,10 +15,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import control.CheckTimetableController;
+import control.ControlManager;
 import data.Station;
 import data.Train;
-import dbconnector.Query;
 
 public class UITimetablePage extends JFrame {
 
@@ -81,7 +78,7 @@ public class UITimetablePage extends JFrame {
 		contentPane.add(label_headSouth);
 		
 		// list train 
-		CheckTimetableController timeWatcher = new CheckTimetableController(new Query());
+		//CheckTimetableController timeWatcher = new CheckTimetableController(new Query());
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 122, 566, 200);
@@ -108,7 +105,7 @@ public class UITimetablePage extends JFrame {
 			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
 		}
 		
-		Train[] trainList = timeWatcher.checkTimetable(date, 0);
+		Train[] trainList = ControlManager.checkTimetable(date, 0);
 		for(Train train : trainList) {
 			List<String> trainTime = new ArrayList<String>();
 			trainTime.add(train.getTid());
@@ -149,7 +146,7 @@ public class UITimetablePage extends JFrame {
 			table_2.getColumnModel().getColumn(i).setCellRenderer(centerRenderer2);
 		}
 		
-		Train[] trainList2 = timeWatcher.checkTimetable(date, 1);
+		Train[] trainList2 = ControlManager.checkTimetable(date, 1);
 		for(Train train : trainList2) {
 			List<String> trainTime = new ArrayList<String>();
 			trainTime.add(train.getTid());
